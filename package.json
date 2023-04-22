@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "homepage": "./",
-  "author": "Nathan Fiscaletti",
+  "author": {
+    "name": "Nathan Fiscaletti",
+    "email": "nate.fiscaletti@gmail.com"
+  },
   "description": "An application for streaming a region of your screen.",
   "main": "./public/electron.js",
   "build": {
