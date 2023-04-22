@@ -17,11 +17,32 @@ module.exports = {
         showRegion = false,
         streamSecret = "password"
     }) => {
-        const args = [
-            "-probesize", "10M",
-            "-f", "gdigrab", "-framerate", `${frameRate}`, "-offset_x", `${offsetX}`, "-offset_y", `${offsetY}`, "-video_size", `${width}x${height}`, ...(showRegion ? ["-show_region", "1"] : []), "-i", "desktop",
-            "-f", "mpegts", "-codec:v", "mpeg1video", "-s", `${width}x${height}`, "-b:v", bitRate, "-bf", "0", `http://localhost:${streamPort}/${streamSecret}`
-        ];
+        let args;
+        switch (process.platform) {
+            case 'win32': {
+                args = [
+                    "-probesize", "10M",
+                    "-f", "gdigrab", "-framerate", `${frameRate}`, "-offset_x", `${offsetX}`, "-offset_y", `${offsetY}`, "-video_size", `${width}x${height}`, ...(showRegion ? ["-show_region", "1"] : []), "-i", "desktop",
+                    "-f", "mpegts", "-codec:v", "mpeg1video", "-s", `${width}x${height}`, "-b:v", bitRate, "-bf", "0", `http://localhost:${streamPort}/${streamSecret}`
+                ];
+                break;
+            }
+
+            case 'darwin': {
+                args = [
+                    "-probesize", "10M",
+                    "-f", "avfoundation", "-framerate", `${frameRate}`, "-video_device_index", "2", "-i", "\":none\"", "-vf", `crop=${width}:${height}:${offsetX}:${offsetY}`,
+                    "-f", "mpegts", "-codec:v", "mpeg1video", "-s", `${width}x${height}`, "-b:v", bitRate, "-bf", "0", `http://localhost:${streamPort}/${streamSecret}`
+                ];
+                break;
+            }
+
+            default: {
+                throw new Error(`Unsupported platform: ${process.platform}`);
+            }
+        }
+
+
         console.log(`$ ${chalk.gray(`${ffmpeg} ${args.join(" ")}`)}`);
         return spawn(
             ffmpeg, args, { stdio: 'inherit', windowsHide: true }
