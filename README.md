@@ -4,9 +4,9 @@ An electron application that leverages FFMPEG to stream a region of your screen 
 
 ## Supported Platforms 
 
-[X] Windows
-[ ] macOS
-[ ] Linux
+- [X] Windows
+- [ ] macOS
+- [ ] Linux
 
 ## Download
 
