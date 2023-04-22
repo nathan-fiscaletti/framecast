@@ -1,25 +1,21 @@
-import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import Viewer from './Viewer';
+import Selector from './Selector';
+import Settings from './Settings';
+
+const App = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const content = urlParams.get('content');
+  if (content === "viewer") {
+    return (<Viewer />);
+  } else if (content === "selector") {
+    return (<Selector />);
+  } else if (content === "settings") {
+    return (<Settings />);
+  }
+
+  return (<div>Invalid content</div>);
+};
 
 export default App;

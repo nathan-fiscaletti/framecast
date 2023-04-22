@@ -1,11 +1,35 @@
 {
   "name": "advanced-screen-streamer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "homepage": "./",
+  "author": "Nathan Fiscaletti",
+  "description": "An application for streaming a region of your screen.",
+  "main": "./public/electron.js",
+  "build": {
+    "appId": "com.github.nathan_fiscaletti.advanced_screen_streamer",
+    "productName": "Advanced Screen Streamer",
+    "files": ["build/**/**/*", "node_modules/**/**/*"],
+    "directories": {
+      "buildResources": "public"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "deb"
+    }
+  },
   "dependencies": {
+    "@cycjimmy/jsmpeg-player": "^6.0.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "chalk": "v4",
+    "ffmpeg-static": "^5.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
@@ -15,7 +39,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://127.0.0.1:3000 && electronmon .\"",
+    "electron:package:mac": "yarn build && electron-builder -m -c.extraMetadata.main=build/electron.js",
+    "electron:package:win": "yarn build && electron-builder -w -c.extraMetadata.main=build/electron.js",
+    "electron:package:linux": "yarn build && electron-builder -l -c.extraMetadata.main=build/electron.js"
   },
   "eslintConfig": {
     "extends": [
@@ -25,14 +53,18 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "last 1 electron version"
     ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      "last 1 electron version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1",
+    "cross-env": "^7.0.3",
+    "electron": "^24.1.2",
+    "electron-builder": "^23.6.0",
+    "electronmon": "^2.0.2",
+    "wait-on": "^7.0.1"
   }
 }
