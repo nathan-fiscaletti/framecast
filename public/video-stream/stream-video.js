@@ -34,6 +34,7 @@ module.exports = {
                 // the region selection window is on when the user confirms their selection.
                 // We should also separate the ffmpeg options out per-platform in the settings window.
                 // Need to figure out how to pass bitrate to avfoundation
+                // Also why are the screen changes so slow on mac?
                 args = [
                     "-probesize", "10M",
                     "-f", "avfoundation", "-framerate", `${frameRate}`, "-video_device_index", "2", "-i", "\":none\"", "-vf", `crop=${width}:${height}:${offsetX}:${offsetY}`,
