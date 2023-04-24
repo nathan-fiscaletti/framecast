@@ -32,6 +32,7 @@ module.exports = {
                 // To list screens: `./node_modules/ffmpeg-static/ffmpeg -f avfoundation -list_devices true -i "" 2>&1 | grep indev | grep screen`
                 // We will need to add a dialog on darwin to prompt the user to select a screen when selecting region, or detect which screen
                 // the region selection window is on when the user confirms their selection.
+                // On macos, if resolution scaling is in place we need to take that into account when starting the recording.
                 // We should also separate the ffmpeg options out per-platform in the settings window.
                 // Need to figure out how to pass bitrate to avfoundation
                 // Also why are the screen changes so slow on mac?

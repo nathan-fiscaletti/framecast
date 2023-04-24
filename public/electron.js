@@ -166,12 +166,13 @@ function createSettingsWindow() {
     x: windows.getMainWindow().getPosition()[0] + windows.getMainWindow().getSize()[0] / 2 - (464 / 2),
     y: windows.getMainWindow().getPosition()[1] + windows.getMainWindow().getSize()[1] / 2 - (308 / 2),
     width: 464,
-    height: 308,
+    height: 408,
     maximizable: false,
     autoHideMenuBar: true,
     alwaysOnTop: true,
     resizable: false,
     roundedCorners: false,
+    minimizable: false,
     title: "Settings",
     webPreferences: {
       nodeIntegration: true,
@@ -186,13 +187,13 @@ function createSettingsWindow() {
   // by the Create React App build process.
   // In development, set it to localhost to allow live/hot-reloading.
   const appURL = app.isPackaged
-  ? `file://${__dirname}/index.html?content=settings`
-    : "http://localhost:3000?content=settings";
+  ? `file://${__dirname}/index.html?content=settings&platform=${process.platform}`
+    : `http://localhost:3000?content=settings&platform=${process.platform}`;
   windows.getSettingsWindow().loadURL(appURL);
   // Automatically open Chrome's DevTools in development mode.
-  // if (!app.isPackaged) {
-  //   windows.getSettingsWindow().webContents.openDevTools();
-  // }
+  if (!app.isPackaged) {
+    windows.getSettingsWindow().webContents.openDevTools();
+  }
 }
 
 function updateMenu() {
