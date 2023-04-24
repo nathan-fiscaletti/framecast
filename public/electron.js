@@ -262,6 +262,12 @@ function createControlWindow() {
     }
   });
 
+  // controlWindow.on("focus", () => {
+  //   if (windows.getViewWindow() && !windows.getViewWindow().isDestroyed() && windows.getViewWindow().getOpacity() !== 0) {
+  //     windows.getViewWindow().moveTop();
+  //   }
+  // })
+
   controlWindow.on("closed", () => {
     process.exit(0);
   });
@@ -284,7 +290,6 @@ function createControlWindow() {
 // Create the native browser window.
 function createViewWindow() {
   const viewWindow = new BrowserWindow({
-    parent: windows.getControlWindow(),
     ...defaultDimensions,
     x: windows.getControlWindow().getPosition()[0],
     y: windows.getControlWindow().getPosition()[1] + windows.getControlWindow().getSize()[1],
@@ -296,6 +301,7 @@ function createViewWindow() {
     minimizable: false,
     frame: false,
     resizable: false,
+    alwaysOnTop: true,
     opacity: settings.previewVisible ? 1 : 0,
     webPreferences: {
       nodeIntegration: true,
