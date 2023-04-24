@@ -38,7 +38,7 @@ module.exports = {
                 // Also why are the screen changes so slow on mac?
                 args = [
                     "-probesize", "10M",
-                    "-f", "avfoundation", "-framerate", `${frameRate}`, "-video_device_index", "2", "-i", "\":none\"", "-vf", `crop=${width}:${height}:${offsetX}:${offsetY}`,
+                    "-f", "avfoundation", "-framerate", `${frameRate}`, "-video_device_index", "1", "-i", "\":none\"", "-vf", `crop=${width}:${height}:${offsetX}:${offsetY}`,
                     "-f", "mpegts", "-codec:v", "mpeg1video", "-s", `${width}x${height}`, "-b:v", bitRate, "-bf", "0", `http://localhost:${streamPort}/${streamSecret}`
                 ];
                 break;

@@ -32,8 +32,10 @@ ipcMain.on('saveRegion', () => {
   const bounds = windows.getRegionSelectionWindow().getBounds();
   streamRegion = { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
   windows.closeRegionSelectionWindow();
-  stopStream();
-  startStream();
+  if (isStreaming()) {
+    stopStream();
+    startStream();
+  }
 });
 
 ipcMain.on("getSettings", (event) => {
@@ -106,8 +108,10 @@ function stopStream() {
     streamProcess = null;
   }
 
-  windows.getViewWindow().setClosable(true);
-  windows.getViewWindow().close();
+  if (windows.getViewWindow() && !windows.getViewWindow().isDestroyed()) {
+    windows.getViewWindow().setClosable(true);
+    windows.getViewWindow().close();
+  }
 }
 
 function selectRegionHandler() {
