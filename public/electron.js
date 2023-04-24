@@ -14,6 +14,7 @@ const settingsDir = path.join(userDir, 'advanced-screen-streamer');
 const settingsFile = path.join(settingsDir, 'settings.json');
 
 const defaultDimensions = { width: 350, height: 1 };
+let settingsWindowPosition = { x: 0, y: 0 };
 let streamRegion = { x: 0, y: 0, width: 500, height: 500 };
 let streamProcess;
 let socketRelay;
@@ -204,6 +205,8 @@ function createSettingsWindow() {
     center: true,
     width: 464,
     height: 432,
+    x: settingsWindowPosition.x,
+    y: settingsWindowPosition.y,
     maximizable: false,
     autoHideMenuBar: true,
     alwaysOnTop: true,
@@ -216,6 +219,11 @@ function createSettingsWindow() {
       enableRemoteModule: true,
       contextIsolation: false
     }
+  });
+
+  settingsWindow.on("move", () => {
+    settingsWindowPosition.x = settingsWindow.getPosition()[0];
+    settingsWindowPosition.y = settingsWindow.getPosition()[1];
   });
 
   windows.setSettingsWindow(settingsWindow);
