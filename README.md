@@ -6,6 +6,8 @@ An electron application that leverages FFMPEG to stream a region of your screen 
 
 - [X] Windows
 - [X] macOS
+    - Multi-monitor support is currently un-tested.
+    - When using display scaling, selected region may not always be properly reflected in the final stream.
 - [ ] Linux
 
 ## Download
