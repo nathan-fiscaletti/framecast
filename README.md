@@ -8,7 +8,7 @@ An electron application that leverages FFMPEG to stream a region of your screen 
 
 ## Video Preview
 
-[![Preview](https://i.imgur.com/Ouyc0f0.png)](https://www.youtube.com/watch?v=lFQPclWUjqw)
+[![Preview](https://i.imgur.com/xe2x2Af.png)](https://youtu.be/IUIsdeD7jnw)
 
 ## Supported Platforms 
 
