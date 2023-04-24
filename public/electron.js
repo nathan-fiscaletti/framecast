@@ -7,6 +7,7 @@ const crypto = require("crypto");
 const { startWebsocketRelay } = require('./video-stream/websocket-relay');
 const { startVideoStreamProcess } = require('./video-stream/stream-video');
 
+const defaultDimensions = { width: 350, height: 1 };
 let streamRegion = { x: 0, y: 0, width: 500, height: 500 };
 let streamProcess;
 let socketRelay;
@@ -85,7 +86,7 @@ function stopStream() {
     streamProcess = null;
   }
 
-  windows.getMainWindow().setContentSize(350, 0);
+  windows.getMainWindow().setContentSize(defaultDimensions.width, defaultDimensions.height);
   windows.getMainWindow().reload();
   updateMenu();
 }
@@ -98,7 +99,7 @@ function resetWindowSizeHandler(menuItem, browserWindow, event) {
   if (isStreaming()) {
     browserWindow.setContentSize(streamRegion.width, streamRegion.height);
   } else {
-    browserWindow.setContentSize(350, 0);
+    browserWindow.setContentSize(defaultDimensions.width, defaultDimensions.height);
   }
 }
 
@@ -124,7 +125,6 @@ function devToolsHandler(menuItem, browserWindow, event) {
 function createRegionSelectionWindow() {
   const regionSelectionWindow = new BrowserWindow({
     parent: windows.getMainWindow(),
-    modal: true,
     ...streamRegion,
     maximizable: false,
     frame: false,
@@ -255,8 +255,7 @@ function createWindow() {
   updateMenu();
   
   const mainWindow = new BrowserWindow({
-    width: 350,
-    height: 0,
+    ...defaultDimensions,
     useContentSize: true,
     maximizable: false,
     title: "Advanced Screen Streamer",
