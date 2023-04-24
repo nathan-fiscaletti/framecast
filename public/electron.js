@@ -32,6 +32,8 @@ ipcMain.on('saveRegion', () => {
   const bounds = windows.getRegionSelectionWindow().getBounds();
   streamRegion = { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
   windows.closeRegionSelectionWindow();
+  stopStream();
+  startStream();
 });
 
 ipcMain.on("getSettings", (event) => {
@@ -52,7 +54,24 @@ ipcMain.on("updateSettings", (event, newSettings) => {
   }
 });
 
+ipcMain.on("selectRegion", (event) => {
+  selectRegionHandler();
+});
+
+ipcMain.on("showSettings", (event) => {
+  settingsHandler();
+});
+
+ipcMain.on("startStream", (event) => {
+  startStreamHandler();
+});
+
+ipcMain.on("stopStream", (event) => {
+  stopStreamHandler();
+});
+
 async function startStream() {
+  createViewWindow();
   const streamSecret = crypto.randomBytes(20).toString('hex')
   socketRelay = await startWebsocketRelay({ 
     streamSecret,
@@ -70,9 +89,10 @@ async function startStream() {
     width: streamRegion.width,
     height: streamRegion.height
   });
-  windows.getMainWindow().setContentSize(streamRegion.width, streamRegion.height);
-  updateMenu();
-  windows.getMainWindow().reload();
+  windows.getViewWindow().setResizable(true);
+  windows.getViewWindow().setContentSize(streamRegion.width, streamRegion.height);
+  windows.getViewWindow().setResizable(false);
+  windows.getViewWindow().reload();
 }
 
 function stopStream() {
@@ -86,45 +106,29 @@ function stopStream() {
     streamProcess = null;
   }
 
-  windows.getMainWindow().setContentSize(defaultDimensions.width, defaultDimensions.height);
-  windows.getMainWindow().reload();
-  updateMenu();
+  windows.getViewWindow().setClosable(true);
+  windows.getViewWindow().close();
 }
 
-function exitMenuHandler(menuItem, browserWindow, event) {
-  BrowserWindow.getAllWindows().map(w => w.close());
-}
-
-function resetWindowSizeHandler(menuItem, browserWindow, event) {
-  if (isStreaming()) {
-    browserWindow.setContentSize(streamRegion.width, streamRegion.height);
-  } else {
-    browserWindow.setContentSize(defaultDimensions.width, defaultDimensions.height);
-  }
-}
-
-function selectRegionHandler(menuItem, browserWindow, event) {
-  if (isStreaming()) {
-    stopStream();
-  }
+function selectRegionHandler() {
   createRegionSelectionWindow();
 }
 
-function startStreamHandler(menuItem, browserWindow, event) {
+function startStreamHandler() {
   startStream();
 }
 
-function settingsHandler(menuItem, browserWindow, event) {
-  createSettingsWindow();
+function stopStreamHandler() {
+  stopStream();
 }
 
-function devToolsHandler(menuItem, browserWindow, event) {
-  windows.getMainWindow().webContents.openDevTools();
+function settingsHandler() {
+  createSettingsWindow();
 }
 
 function createRegionSelectionWindow() {
   const regionSelectionWindow = new BrowserWindow({
-    parent: windows.getMainWindow(),
+    parent: windows.getControlWindow(),
     ...streamRegion,
     maximizable: false,
     frame: false,
@@ -161,10 +165,9 @@ function createRegionSelectionWindow() {
 
 function createSettingsWindow() {
   const settingsWindow = new BrowserWindow({
-    parent: windows.getMainWindow(),
+    parent: windows.getControlWindow(),
     modal: true,
-    x: windows.getMainWindow().getPosition()[0] + windows.getMainWindow().getSize()[0] / 2 - (464 / 2),
-    y: windows.getMainWindow().getPosition()[1] + windows.getMainWindow().getSize()[1] / 2 - (308 / 2),
+    center: true,
     width: 464,
     height: 408,
     maximizable: false,
@@ -191,74 +194,23 @@ function createSettingsWindow() {
     : `http://localhost:3000?content=settings&platform=${process.platform}`;
   windows.getSettingsWindow().loadURL(appURL);
   // Automatically open Chrome's DevTools in development mode.
-  if (!app.isPackaged) {
-    windows.getSettingsWindow().webContents.openDevTools();
-  }
+  // if (!app.isPackaged) {
+  //   windows.getSettingsWindow().webContents.openDevTools();
+  // }
 }
 
-function updateMenu() {
-  const template = [
-    {
-      label: 'Application',
-      submenu: [
-        {
-          label: "Settings",
-          click: settingsHandler
-        },
-        {
-          label: "Exit Application",
-          click: exitMenuHandler
-        }
-      ]
-    },
-    {
-      label: "Stream",
-      submenu: [
-        {
-          label: "Select Region",
-          enabled: !isStreaming(),
-          click: selectRegionHandler
-        },
-        {
-          label: "Start Stream",
-          enabled: !isStreaming(),
-          click: startStreamHandler
-        },
-        {
-          label: "Stop Stream",
-          enabled: isStreaming(),
-          click: stopStream
-        }
-      ]
-    },
-    {
-      label: "Window",
-      submenu: [
-        {
-          label: "Reset Window Size",
-          click: resetWindowSizeHandler
-        },
-        {
-          label: 'Open Dev Tools',
-          click: devToolsHandler
-        }
-      ]
-    }
-  ];
- 
-  const menu = Menu.buildFromTemplate(template)
-
-  Menu.setApplicationMenu(menu);
-}
-
-// Create the native browser window.
-function createWindow() {
-  updateMenu();
-  
-  const mainWindow = new BrowserWindow({
-    ...defaultDimensions,
-    useContentSize: true,
+function createControlWindow() {
+  const controlWindow = new BrowserWindow({
+    modal: true,
+    center: true,
+    width: 432,
+    height: 107,
     maximizable: false,
+    minimizable: false,
+    autoHideMenuBar: true,
+    alwaysOnTop: true,
+    resizable: false,
+    roundedCorners: false,
     title: "Advanced Screen Streamer",
     webPreferences: {
       nodeIntegration: true,
@@ -267,7 +219,58 @@ function createWindow() {
     }
   });
 
-  windows.setMainWindow(mainWindow);
+  controlWindow.on("move", () => {
+    if (windows.getViewWindow() && !windows.getViewWindow().isDestroyed()) {
+      windows.getViewWindow().setPosition(
+        windows.getControlWindow().getPosition()[0],
+        windows.getControlWindow().getPosition()[1] + windows.getControlWindow().getSize()[1],
+      );
+    }
+  });
+
+  controlWindow.on("closed", () => {
+    process.exit(0);
+  });
+
+  windows.setControlWindow(controlWindow);
+
+  // In production, set the initial browser path to the local bundle generated
+  // by the Create React App build process.
+  // In development, set it to localhost to allow live/hot-reloading.
+  const appURL = app.isPackaged
+  ? `file://${__dirname}/index.html?content=control&platform=${process.platform}`
+    : `http://localhost:3000?content=control&platform=${process.platform}`;
+  windows.getControlWindow().loadURL(appURL);
+  // Automatically open Chrome's DevTools in development mode.
+  // if (!app.isPackaged) {
+  //   windows.getControlWindow().webContents.openDevTools();
+  // }
+}
+
+// Create the native browser window.
+function createViewWindow() {
+  const viewWindow = new BrowserWindow({
+    ...defaultDimensions,
+    x: windows.getControlWindow().getPosition()[0],
+    y: windows.getControlWindow().getPosition()[1] + windows.getControlWindow().getSize()[1],
+    useContentSize: true,
+    skipTaskbar: true,
+    maximizable: false,
+    closable: false,
+    title: "Advanced Screen Streamer - Viewer",
+    minimizable: false,
+    frame: false,
+    resizable: false,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: false
+    }
+  });
+
+  
+
+  windows.setViewWindow(viewWindow);
 
   // In production, set the initial browser path to the local bundle generated
   // by the Create React App build process.
@@ -275,11 +278,11 @@ function createWindow() {
   const appURL = app.isPackaged
     ? `file://${__dirname}/index.html?content=viewer`
     : "http://localhost:3000?content=viewer";
-  windows.getMainWindow().loadURL(appURL);
+  windows.getViewWindow().loadURL(appURL);
 
   // Automatically open Chrome's DevTools in development mode.
   // if (!app.isPackaged) {
-  //   windows.getMainWindow().webContents.openDevTools();
+  //   windows.getViewWindow().webContents.openDevTools();
   // }
 }
 
@@ -302,14 +305,14 @@ function createWindow() {
 // is ready to create the browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-  createWindow();
+  createControlWindow();
   // setupLocalFilesNormalizerProxy();
 
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      createControlWindow();
     }
   });
 });

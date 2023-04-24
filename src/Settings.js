@@ -147,7 +147,7 @@ export default function Settings() {
                                 padding: '8px',
                                 border: '1px solid green',
                                 backgroundColor: saveHover ? 'green' : 'black',
-                                color: 'white',
+                                color: saveHover ? 'white' : 'green',
                                 textAlign: 'center',
                                 cursor: 'pointer'
                             }}

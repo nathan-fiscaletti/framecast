@@ -1,13 +1,14 @@
-var mainWindow;
-var regionSelectionWindow;
-var settingsWindow;
+let viewWindow;
+let regionSelectionWindow;
+let settingsWindow;
+let controlWindow;
 
-function setMainWindow(window) {
-    mainWindow = window;
+function setViewWindow(window) {
+    viewWindow = window;
 }
 
-function getMainWindow() {
-    return mainWindow;
+function getViewWindow() {
+    return viewWindow;
 }
 
 function setRegionSelectionWindow(window) {
@@ -26,6 +27,14 @@ function getSettingsWindow() {
     return settingsWindow;
 }
 
+function setControlWindow(window) {
+    controlWindow = window;
+}
+
+function getControlWindow() {
+    return controlWindow;
+}
+
 function closeRegionSelectionWindow() {
     if (regionSelectionWindow) {
         regionSelectionWindow.close();
@@ -40,4 +49,18 @@ function closeSettingsWindow() {
     }
 }
 
-module.exports = { setMainWindow, getMainWindow, setRegionSelectionWindow, getRegionSelectionWindow, setSettingsWindow, getSettingsWindow, closeRegionSelectionWindow, closeSettingsWindow }
+module.exports = { 
+    setControlWindow,
+    getControlWindow,
+
+    setViewWindow,
+    getViewWindow,
+
+    setRegionSelectionWindow,
+    getRegionSelectionWindow,
+    closeRegionSelectionWindow, 
+
+    setSettingsWindow,
+    getSettingsWindow,
+    closeSettingsWindow,
+};

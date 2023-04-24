@@ -29,7 +29,7 @@ export default function Selector() {
                         padding: '8px',
                         border: '1px solid red',
                         backgroundColor: cancelHover ? 'red' : 'black',
-                        color: 'white',
+                        color: cancelHover ? 'white' : 'red',
                         marginRight: '16px'
                     }}
                     onMouseEnter={() => setCancelHover(true)}
@@ -44,7 +44,7 @@ export default function Selector() {
                         padding: '8px',
                         border: '1px solid green',
                         backgroundColor: saveHover ? 'green' : 'black',
-                        color: 'white'
+                        color: saveHover ? 'white' : 'green'
                     }}
                     onMouseEnter={() => setSaveHover(true)}
                     onMouseLeave={() => setSaveHover(false)}

@@ -3,6 +3,7 @@ import './App.css';
 import Viewer from './Viewer';
 import Selector from './Selector';
 import Settings from './Settings';
+import Control from './Control';
 
 const App = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -13,6 +14,8 @@ const App = () => {
     return (<Selector />);
   } else if (content === "settings") {
     return (<Settings />);
+  } else if (content === "control") {
+    return (<Control />);
   }
 
   return (<div>Invalid content</div>);
