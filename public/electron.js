@@ -32,6 +32,10 @@ const settings = {
 
 // Load settings
 try {
+  if (!fs.existsSync(settingsDir)) {
+    fs.mkdirSync(settingsDir);
+  }
+
   if(!fs.existsSync(settingsFile)) {
     fs.writeFileSync(settingsFile, JSON.stringify(settings));
   }
