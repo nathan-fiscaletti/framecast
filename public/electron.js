@@ -9,8 +9,9 @@ const crypto = require("crypto");
 const { startWebsocketRelay } = require('./video-stream/websocket-relay');
 const { startVideoStreamProcess } = require('./video-stream/stream-video');
 
-const settingsDir = process.env.APPDATA || (process.platform === 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share");
-const settingsFile = path.join(settingsDir, 'advanced-screen-streamer', 'settings.json');
+const userDir = process.env.APPDATA || (process.platform === 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share");
+const settingsDir = path.join(userDir, 'advanced-screen-streamer');
+const settingsFile = path.join(settingsDir, 'settings.json');
 
 const defaultDimensions = { width: 350, height: 1 };
 let streamRegion = { x: 0, y: 0, width: 500, height: 500 };
