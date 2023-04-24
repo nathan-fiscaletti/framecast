@@ -1,11 +1,16 @@
 // Module to control the application lifecycle and the native browser window.
-const { app, BrowserWindow, Menu, ipcMain } = require("electron");
-const windows = require('./windows');
+const { app, BrowserWindow, ipcMain } = require("electron");
 
+const fs = require('fs');
+const path = require("path");
+const windows = require('./windows');
 const crypto = require("crypto");
 
 const { startWebsocketRelay } = require('./video-stream/websocket-relay');
 const { startVideoStreamProcess } = require('./video-stream/stream-video');
+
+const settingsDir = process.env.APPDATA || (process.platform === 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share");
+const settingsFile = path.join(settingsDir, 'advanced-screen-streamer', 'settings.json');
 
 const defaultDimensions = { width: 350, height: 1 };
 let streamRegion = { x: 0, y: 0, width: 500, height: 500 };
@@ -21,8 +26,21 @@ const settings = {
   streamPort: 9066,
   frameRate: 60,
   bitRate: 10000,
+  previewVisible: false,
   showRegion: true,
 };
+
+// Load settings
+try {
+  if(!fs.existsSync(settingsFile)) {
+    fs.writeFileSync(settingsFile, JSON.stringify(settings));
+  }
+
+  const loadedSettings = JSON.parse(fs.readFileSync(settingsFile));
+  Object.assign(settings, loadedSettings);
+} catch (err) {
+  console.error(err);
+}
 
 ipcMain.on('closeRegionSelector',() => {
   windows.closeRegionSelectionWindow();
@@ -47,7 +65,14 @@ ipcMain.on("updateSettings", (event, newSettings) => {
   settings.streamPort = newSettings.streamPort;
   settings.frameRate = newSettings.frameRate;
   settings.bitRate = newSettings.bitRate;
+  settings.previewVisible = newSettings.previewVisible;
   settings.showRegion = newSettings.showRegion;
+
+  try {
+    fs.writeFileSync(settingsFile, JSON.stringify(settings));
+  } catch (err) {
+    console.error(err);
+  }
 
   windows.closeSettingsWindow();
   if(isStreaming()) {
@@ -173,7 +198,7 @@ function createSettingsWindow() {
     modal: true,
     center: true,
     width: 464,
-    height: 408,
+    height: 432,
     maximizable: false,
     autoHideMenuBar: true,
     alwaysOnTop: true,
@@ -254,6 +279,7 @@ function createControlWindow() {
 // Create the native browser window.
 function createViewWindow() {
   const viewWindow = new BrowserWindow({
+    parent: windows.getControlWindow(),
     ...defaultDimensions,
     x: windows.getControlWindow().getPosition()[0],
     y: windows.getControlWindow().getPosition()[1] + windows.getControlWindow().getSize()[1],
@@ -265,14 +291,13 @@ function createViewWindow() {
     minimizable: false,
     frame: false,
     resizable: false,
+    opacity: settings.previewVisible ? 1 : 0,
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
       contextIsolation: false
     }
   });
-
-  
 
   windows.setViewWindow(viewWindow);
 

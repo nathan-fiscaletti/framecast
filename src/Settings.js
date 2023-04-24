@@ -10,24 +10,18 @@ ipcRenderer.on("settings", (event, settings) => {
 
     switch(platform) {
         case 'win32': {
-            document.getElementById("webSocketPort").value = settings.webSocketPort;
-            document.getElementById("streamPort").value = settings.streamPort;
-            document.getElementById("frameRate").value = settings.frameRate;
-            document.getElementById("bitRate").value = settings.bitRate;
             document.getElementById("showRegion").checked = settings.showRegion;
-            break;
-        }
-
-        case 'darwin': {
-            document.getElementById("webSocketPort").value = settings.webSocketPort;
-            document.getElementById("streamPort").value = settings.streamPort;
-            document.getElementById("frameRate").value = settings.frameRate;
-            document.getElementById("bitRate").value = settings.bitRate;
             break;
         }
 
         default: {}
     }
+
+    document.getElementById("webSocketPort").value = settings.webSocketPort;
+    document.getElementById("streamPort").value = settings.streamPort;
+    document.getElementById("frameRate").value = settings.frameRate;
+    document.getElementById("bitRate").value = settings.bitRate;
+    document.getElementById("previewVisible").checked = settings.previewVisible;
 });
 
 function saveSettings() {
@@ -39,10 +33,6 @@ function saveSettings() {
     switch(platform) {
         case 'win32': {
             settings = {
-                webSocketPort: document.getElementById("webSocketPort").value,
-                streamPort: document.getElementById("streamPort").value,
-                frameRate: document.getElementById("frameRate").value,
-                bitRate: document.getElementById("bitRate").value,
                 showRegion: document.getElementById("showRegion").checked,
             };
             break;
@@ -50,10 +40,6 @@ function saveSettings() {
 
         case 'darwin': {
             settings = {
-                webSocketPort: document.getElementById("webSocketPort").value,
-                streamPort: document.getElementById("streamPort").value,
-                frameRate: document.getElementById("frameRate").value,
-                bitRate: document.getElementById("bitRate").value,
                 showRegion: true,
             };
             break;
@@ -62,6 +48,15 @@ function saveSettings() {
         default: {}
     }
     
+    settings = {
+        ...settings,
+        webSocketPort: document.getElementById("webSocketPort").value,
+        streamPort: document.getElementById("streamPort").value,
+        frameRate: document.getElementById("frameRate").value,
+        bitRate: document.getElementById("bitRate").value,
+        previewVisible: document.getElementById("previewVisible").checked,
+    }
+
     ipcRenderer.send("updateSettings", settings);
 }
 
@@ -94,6 +89,12 @@ export default function Settings() {
                         <input type="number" id="streamPort" style={{ width: '100%' }} min="255" max="65535" />
                     </div>
                 </div>
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <div style={{ marginRight: '16px', width: '200px' }}>Show Preview:</div>
+                    <div style={{ width: '200px' }}>
+                        <input type="checkbox" id="previewVisible" />
+                    </div>
+                </div>
             </div>
 
             <h3 style={{ color: 'gray' }}>Stream Settings (<i>{platform}</i>)</h3>
@@ -103,7 +104,7 @@ export default function Settings() {
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                         <div style={{ marginRight: '16px', width: '200px' }}>Frame Rate (fps):</div>
                         <div style={{ width: '200px' }}>
-                            <input type="number" id="frameRate" style={{ width: '100%' }} min="1" />
+                            <input type="number" id="frameRate" style={{ width: '100%' }} min="1" max="240" />
                         </div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
@@ -126,7 +127,7 @@ export default function Settings() {
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                         <div style={{ marginRight: '16px', width: '200px' }}>Frame Rate (fps):</div>
                         <div style={{ width: '200px' }}>
-                            <input type="number" id="frameRate" style={{ width: '100%' }} min="1" />
+                            <input type="number" id="frameRate" style={{ width: '100%' }} min="1" max="240" />
                         </div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
