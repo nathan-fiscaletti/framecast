@@ -13,3 +13,7 @@ An electron application that leverages FFMPEG to stream a region of your screen 
 ## Download
 
 [Download Latest Version](https://github.com/nathan-fiscaletti/advanced-screen-streamer/releases/latest)
+
+## Video Preview
+
+[![Preview](https://i.imgur.com/Ouyc0f0.png)](https://www.youtube.com/watch?v=lFQPclWUjqw)
