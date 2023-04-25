@@ -4,9 +4,15 @@
 
 # Advanced Screen Streamer
 
-An electron application that leverages FFMPEG to stream a region of your screen to a window. This way, you can share a particular region of your screen in applications such as Google Meet that don't let you select a particular region of your screen to record but instead allow you to select a window.
+### The problem
 
-**This is especially useful when you are running on an Ultrawide display and don't want to be limitted to only sharing a particular application.**
+Normally, when sharing your screen, video conferencing applications only allow you to share a specific window, a browser tab, or an entire screen. If you choose to share a specific window, you are unable to drag another window onto the stream without re-sharing your screen. You are also unable to share multiple windows at once without sharing your entire screen.
+
+### The solution
+
+Advanced Screen Streamer is an electron application that leverages FFMPEG to stream a region of your screen to a window. Using this, you can share the selected region by selecting the "Viewer" window from Advanced Screen Streamer in your video conferencing application when you start sharing your screen.
+
+**This is especially useful when you are running on an Ultrawide display.**
 
 ## Download
 
