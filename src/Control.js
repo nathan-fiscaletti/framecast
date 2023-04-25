@@ -1,12 +1,12 @@
 import React from 'react';
 
+import { Box, Button, Typography, Tooltip, Paper, Link } from '@mui/material';
+
 import CopyrightIcon from '@mui/icons-material/Copyright';
 import StopIcon from '@mui/icons-material/Stop';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
-
-import { Box, Button, Typography, Tooltip, Paper, Link } from '@mui/material';
 
 const { ipcRenderer } = window.require('electron');
 

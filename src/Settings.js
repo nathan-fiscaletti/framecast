@@ -1,5 +1,16 @@
 import React from 'react';
 
+import { styled } from '@mui/material/styles';
+import { 
+    AppBar, Checkbox, Box, Button, Divider, TextField,
+    Typography, Tabs, Tab, Tooltip, Snackbar, Alert,
+    AlertTitle, Paper, Collapse, Slider, InputAdornment,
+    Link, Select, MenuItem, FormControl, InputLabel,
+    Slide, Dialog, DialogTitle, DialogContent,
+    DialogActions, DialogContentText 
+} from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
@@ -7,10 +18,6 @@ import GavelOutlinedIcon from '@mui/icons-material/GavelOutlined';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
-
-import { AppBar, Checkbox, Box, Button, Divider, TextField, Typography, Tabs, Tab, Tooltip, Snackbar, Alert, AlertTitle, Paper, Collapse, Slider, InputAdornment, Link, Select, MenuItem, FormControl, InputLabel, Slide, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { LoadingButton } from '@mui/lab';
 
 const { ipcRenderer, shell } = window.require('electron');
 
@@ -58,6 +65,10 @@ const SlideUpDialogTransition = React.forwardRef(function Transition(props, ref)
 });
 
 export default function Settings() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const platform = urlParams.get('platform');
+    const version = urlParams.get('version');
+
     const [streamPort, setStreamPort] = React.useState(0);
     const [webSocketPort, setWebSocketPort] = React.useState(0);
     const [previewVisible, setPreviewVisible] = React.useState(false);
@@ -90,10 +101,6 @@ export default function Settings() {
 
         ipcRenderer.send("getSettings");
     }, []);
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const platform = urlParams.get('platform');
-    const version = urlParams.get('version');
 
     const [saveFinished, setSaveFinished] = React.useState(false);
     const [error, setError] = React.useState(null);

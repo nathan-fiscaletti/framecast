@@ -1,9 +1,10 @@
+const { spawn } = require('child_process');
+const chalk = require('chalk');
+
 const ffmpeg = require('ffmpeg-static').replace(
     'app.asar',
     'app.asar.unpacked'
 );
-const { spawn } = require('child_process');
-const chalk = require('chalk');
 
 module.exports = {
     startVideoStreamProcess: async ({
@@ -31,6 +32,9 @@ module.exports = {
             }
 
             case 'darwin': {
+                // Determine the FFmpeg index for the screen on which the recording
+                // will be made. This is necessary because the index is not the same
+                // as the screen ID.
                 const output = await new Promise((resolve, reject) => {
                     try {
                         let deviceListOutput = "";
@@ -40,13 +44,13 @@ module.exports = {
                                 "-f", "avfoundation", "-list_devices", "true", "-i", "\"\""
                             ]
                         );
-                        listDevicesCommand.stderr.on('data', function(data) {
+                        listDevicesCommand.stderr.on('data', function (data) {
                             deviceListOutput += data.toString();
                         });
-                        listDevicesCommand.stdout.on('data', function(data) {
+                        listDevicesCommand.stdout.on('data', function (data) {
                             deviceListOutput += data.toString();
                         });
-                        listDevicesCommand.on('close', function(code) {
+                        listDevicesCommand.on('close', function (code) {
                             return resolve(deviceListOutput);
                         });
                     } catch (err) {
@@ -56,8 +60,8 @@ module.exports = {
 
                 let screenIndexes = [];
                 const lines = output.split(/\r?\n/);
-                for(const line of lines) {
-                    if(line.includes("indev")) {
+                for (const line of lines) {
+                    if (line.includes("indev")) {
                         if (line.includes("Capture screen")) {
                             const idx = parseInt(line.split("[").pop().split("]").shift().trim());
                             screenIndexes = [...screenIndexes, idx];
@@ -65,15 +69,12 @@ module.exports = {
                     }
                 }
 
-                const vdIndex = screenIndexes[screenId - 1];
+                const ffmpegScreenIndex = screenIndexes[screenId - 1];
 
                 // To list screens: `./node_modules/ffmpeg-static/ffmpeg -f avfoundation -list_devices true -i "" 2>&1 | grep indev | grep screen`
-                // We will need to add a dialog on darwin to prompt the user to select a screen when selecting region, or detect which screen
-                // the region selection window is on when the user confirms their selection.
-                // On macos, if resolution scaling is in place we need to take that into account when starting the recording.
-                // We should also separate the ffmpeg options out per-platform in the settings window.
-                // Need to figure out how to pass bitrate to avfoundation
-                // Also why are the screen changes so slow on mac?
+
+                // Update the width, height, and offset values to account for the
+                // screen scaling factor.
                 width = width * scaleFactor;
                 height = height * scaleFactor;
                 offsetX = offsetX * scaleFactor;
@@ -81,7 +82,7 @@ module.exports = {
 
                 args = [
                     "-probesize", "10M",
-                    "-f", "avfoundation", "-framerate", `${frameRate}`, "-video_device_index", `${vdIndex}`, "-i", "\":none\"", "-vf", `crop=${width}:${height}:${offsetX}:${offsetY}`, '-capture_cursor', 'true',
+                    "-f", "avfoundation", "-framerate", `${frameRate}`, "-video_device_index", `${ffmpegScreenIndex}`, "-i", "\":none\"", "-vf", `crop=${width}:${height}:${offsetX}:${offsetY}`, '-capture_cursor', 'true',
                     "-f", "mpegts", "-codec:v", "mpeg1video", "-s", `${width}x${height}`, "-b:v", bitRate, "-bf", "0", `http://localhost:${streamPort}/${streamSecret}`
                 ];
                 break;
@@ -91,7 +92,6 @@ module.exports = {
                 throw new Error(`Unsupported platform: ${process.platform}`);
             }
         }
-
 
         console.log(`$ ${chalk.gray(`${ffmpeg} ${args.join(" ")}`)}`);
         return spawn(

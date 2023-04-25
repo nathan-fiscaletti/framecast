@@ -11,11 +11,11 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
-import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-
 import deepOrange from '@mui/material/colors/green';
 
+// Create the initial theme for the application.
 const theme = createTheme({
   palette: {
     mode: 'dark',
@@ -24,9 +24,11 @@ const theme = createTheme({
 });
 
 function App() {
+  // Get the content parameter from the URL.
   const urlParams = new URLSearchParams(window.location.search);
   const content = urlParams.get('content');
 
+  // Load the appropriate page based on the content parameter.
   return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -35,14 +37,6 @@ function App() {
         {(content === "selector") && (<Selector />)}
         {(content === "settings") && (<Settings />)}
         {(content === "control") && (<Control />)}
-          {/* return (<Viewer />);
-        } else if (content === "selector") {
-          return (<Selector />);
-        } else if (content === "settings") {
-          return (<Settings />);
-        } else if (content === "control") {
-          return (<Control />);
-        } */}
       </ThemeProvider>
   );
 }
