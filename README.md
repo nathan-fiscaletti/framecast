@@ -14,7 +14,7 @@ An electron application that leverages FFMPEG to stream a region of your screen 
 
 ## Video Preview
 
-[![Preview](https://i.imgur.com/xe2x2Af.png)](https://youtu.be/IUIsdeD7jnw)
+[![Preview](https://i.imgur.com/A7EOJ9l.png)](https://youtu.be/5-75Qg5y3yQ)
 
 ## Supported Platforms 
 
