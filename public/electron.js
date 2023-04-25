@@ -1,5 +1,5 @@
 // Module to control the application lifecycle and the native browser window.
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, screen } = require("electron");
 
 const fs = require('fs');
 const path = require("path");
@@ -15,6 +15,7 @@ const settingsFile = path.join(settingsDir, 'settings.json');
 
 const settingsWindowLocation = { x: -1, y: -1 };
 const defaultDimensions = { width: 350, height: 1 };
+let streamScreen;
 let streamRegion = { x: 0, y: 0, width: 500, height: 500 };
 let streamProcess;
 let socketRelay;
@@ -54,7 +55,14 @@ ipcMain.on('closeRegionSelector',() => {
 
 ipcMain.on('saveRegion', () => {
   const bounds = windows.getRegionSelectionWindow().getBounds();
+  streamScreen = screen.getDisplayNearestPoint(
+    windows.getRegionSelectionWindow().getBounds()
+  );
   streamRegion = { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
+  if (process.platform === "darwin") {
+    streamRegion.x -= streamScreen.bounds.x;
+    streamRegion.y -= streamScreen.bounds.y;
+  }
   windows.closeRegionSelectionWindow();
   if (isStreaming()) {
     stopStream();
@@ -117,7 +125,7 @@ async function startStream() {
     streamPort: settings.streamPort,
     webSocketPort: settings.webSocketPort,
   });
-  streamProcess = startVideoStreamProcess({ 
+  streamProcess = await startVideoStreamProcess({ 
     frameRate: settings.frameRate,
     bitRate: `${settings.bitRate}k`,
     streamPort: settings.streamPort,
@@ -126,7 +134,9 @@ async function startStream() {
     offsetX: streamRegion.x,
     offsetY: streamRegion.y,
     width: streamRegion.width,
-    height: streamRegion.height
+    height: streamRegion.height,
+    screenId: streamScreen.id,
+    scaleFactor: streamScreen.scaleFactor
   });
   windows.getViewWindow().setResizable(true);
   windows.getViewWindow().setContentSize(streamRegion.width, streamRegion.height);
@@ -174,16 +184,18 @@ function createRegionSelectionWindow() {
     return;
   }
 
+  const windowBounds = { ...streamRegion };
+  windowBounds.x += streamScreen.bounds.x;
+  windowBounds.y += streamScreen.bounds.y;
+
   const regionSelectionWindow = new BrowserWindow({
-    parent: windows.getControlWindow(),
-    ...streamRegion,
+    // parent: windows.getControlWindow(),
+    ...windowBounds,
     maximizable: false,
     frame: false,
     alwaysOnTop: true,
     roundedCorners: false,
     opacity: 0.75,
-    x: streamRegion.x,
-    y: streamRegion.y,
     width: streamRegion.width,
     height: streamRegion.height,
     title: "Select Recording Region",
@@ -373,6 +385,7 @@ function createViewWindow() {
 // is ready to create the browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+  streamScreen = screen.getPrimaryDisplay();
   createControlWindow();
   // setupLocalFilesNormalizerProxy();
 
