@@ -26,6 +26,5 @@ Advanced Screen Streamer is an electron application that leverages FFMPEG to str
 
 - [X] Windows
 - [X] macOS
-    - Multi-monitor support is currently un-tested.
-    - When using display scaling, selected region may not always be properly reflected in the final stream.
+    - Multi-monitor support is currently functional on macOS, however you may experience issues on some systems due to the ordering of the displays. (The application might stream the left display even though you've selected a region on the right display). To fix this you can attempt re-ordering the displays in the Settings application.
 - [ ] Linux
