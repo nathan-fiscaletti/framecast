@@ -1,166 +1,428 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 
-const { ipcRenderer } = window.require('electron');
+import SettingsIcon from '@mui/icons-material/Settings';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
+import GavelOutlinedIcon from '@mui/icons-material/GavelOutlined';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 
-ipcRenderer.on("settings", (event, settings) => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const platform = urlParams.get('platform');
+import { AppBar, Checkbox, Box, Button, Divider, TextField, Typography, Tabs, Tab, Tooltip, Snackbar, Alert, AlertTitle, Paper, Collapse, Slider, InputAdornment, Link, Select, MenuItem, FormControl, InputLabel, Slide, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { LoadingButton } from '@mui/lab';
 
-    switch(platform) {
-        case 'win32': {
-            document.getElementById("showRegion").checked = settings.showRegion;
-            break;
-        }
+const { ipcRenderer, shell } = window.require('electron');
 
-        default: {}
-    }
+const PrettoSlider = styled(Slider)({
+    color: '#52af77',
+    height: 8,
+    '& .MuiSlider-track': {
+      border: 'none',
+    },
+    '& .MuiSlider-thumb': {
+      height: 24,
+      width: 24,
+      backgroundColor: '#fff',
+      border: '2px solid currentColor',
+      '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
+        boxShadow: 'inherit',
+      },
+      '&:before': {
+        display: 'none',
+      },
+    },
+    '& .MuiSlider-valueLabel': {
+      lineHeight: 1.2,
+      fontSize: 12,
+      background: 'unset',
+      padding: 0,
+      width: 32,
+      height: 32,
+      borderRadius: '50% 50% 50% 0',
+      backgroundColor: '#52af77',
+      transformOrigin: 'bottom left',
+      transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
+      '&:before': { display: 'none' },
+      '&.MuiSlider-valueLabelOpen': {
+        transform: 'translate(50%, -100%) rotate(-45deg) scale(1)',
+      },
+      '& > *': {
+        transform: 'rotate(45deg)',
+      },
+    },
+  });
 
-    document.getElementById("webSocketPort").value = settings.webSocketPort;
-    document.getElementById("streamPort").value = settings.streamPort;
-    document.getElementById("frameRate").value = settings.frameRate;
-    document.getElementById("bitRate").value = settings.bitRate;
-    document.getElementById("previewVisible").checked = settings.previewVisible;
+const SlideUpDialogTransition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
 });
 
-function saveSettings() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const platform = urlParams.get('platform');
-
-    let settings;
-
-    switch(platform) {
-        case 'win32': {
-            settings = {
-                showRegion: document.getElementById("showRegion").checked,
-            };
-            break;
-        }
-
-        case 'darwin': {
-            settings = {
-                showRegion: true,
-            };
-            break;
-        }
-
-        default: {}
-    }
-    
-    settings = {
-        ...settings,
-        webSocketPort: document.getElementById("webSocketPort").value,
-        streamPort: document.getElementById("streamPort").value,
-        frameRate: document.getElementById("frameRate").value,
-        bitRate: document.getElementById("bitRate").value,
-        previewVisible: document.getElementById("previewVisible").checked,
-    }
-
-    ipcRenderer.send("updateSettings", settings);
-}
-
 export default function Settings() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const platform = urlParams.get('platform');
-
-    const [saveHover, setSaveHover] = React.useState(false);
+    const [streamPort, setStreamPort] = React.useState(0);
+    const [webSocketPort, setWebSocketPort] = React.useState(0);
+    const [previewVisible, setPreviewVisible] = React.useState(false);
+    const [showRegion, setShowRegion] = React.useState(false);
+    const [frameRate, setFrameRate] = React.useState(0);
+    const [bitRate, setBitRate] = React.useState(0);
 
     React.useEffect(() => {
+        document.querySelector("body").style = "overflow: auto;";
+
+        ipcRenderer.on("settings", (event, settings) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const platform = urlParams.get('platform');
+        
+            switch(platform) {
+                case 'win32': {
+                    setShowRegion(settings.showRegion);
+                    break;
+                }
+        
+                default: {}
+            }
+
+            setFrameRate(settings.frameRate);
+            setBitRate(settings.bitRate);
+            setStreamPort(settings.streamPort);
+            setWebSocketPort(settings.webSocketPort);
+            setPreviewVisible(settings.previewVisible);
+        });
+
         ipcRenderer.send("getSettings");
     }, []);
 
-    return (
-        <div style={{ backgroundColor: 'black', color: 'white', width: '100%', height: '100vh', padding: '16px' }}>
-            <h1 style={{ marginBottom: "16px" }}>Settings</h1>
+    const urlParams = new URLSearchParams(window.location.search);
+    const platform = urlParams.get('platform');
+    const version = urlParams.get('version');
 
-            <h3 style={{ color: 'gray' }}>Application Settings</h3>
+    const [saveFinished, setSaveFinished] = React.useState(false);
+    const [error, setError] = React.useState(null);
 
-            <div style={{ display: 'flex', flexDirection: 'column', marginTop: '16px', marginBottom: '16px' }}>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                    <div style={{ marginRight: '16px', width: '200px' }}>Web Socket Port:</div>
-                    <div style={{ width: '200px' }}>
-                        <input type="number" id="webSocketPort" style={{ width: '100%' }} min="255" max="65535" />
-                    </div>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                    <div style={{ marginRight: '16px', width: '200px' }}>Stream Port:</div>
-                    <div style={{ width: '200px' }}>
-                        <input type="number" id="streamPort" style={{ width: '100%' }} min="255" max="65535" />
-                    </div>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                    <div style={{ marginRight: '16px', width: '200px' }}>Show Preview:</div>
-                    <div style={{ width: '200px' }}>
-                        <input type="checkbox" id="previewVisible" />
-                    </div>
-                </div>
-            </div>
+    const [selectedTab, setSelectedTab] = React.useState(parseInt(urlParams.get('tab')));
 
-            <h3 style={{ color: 'gray' }}>Stream Settings (<i>{platform}</i>)</h3>
+    const [update, setUpdate] = React.useState(null);
+    const [checkingForUpdate, setCheckingForUpdate] = React.useState(false);
+    const [showUpToDate, setShowUpToDate] = React.useState(false);
+    const [updateError, setUpdateError] = React.useState(null);
 
-            {platform === 'win32' && (
-                <div style={{ display: 'flex', flexDirection: 'column', marginTop: '16px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <div style={{ marginRight: '16px', width: '200px' }}>Frame Rate (fps):</div>
-                        <div style={{ width: '200px' }}>
-                            <input type="number" id="frameRate" style={{ width: '100%' }} min="1" max="240" />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <div style={{ marginRight: '16px', width: '200px' }}>Bit Rate (kbps):</div>
-                        <div style={{ width: '200px' }}>
-                            <input type="number" id="bitRate" style={{ width: '100%' }} min="1" max="100000" />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <div style={{ marginRight: '16px', width: '200px' }}>Show Recording Region:</div>
-                        <div style={{ width: '200px' }}>
-                            <input type="checkbox" id="showRegion" />
-                        </div>
-                    </div>
-                </div>
+    const save = () => {
+        try {
+            let settings;
+
+            switch(platform) {
+                case 'win32': {
+                    settings = {
+                        showRegion,
+                    };
+                    break;
+                }
+        
+                case 'darwin': {
+                    settings = {
+                        showRegion: true,
+                    };
+                    break;
+                }
+        
+                default: {}
+            }
+            
+            settings = {
+                ...settings,
+                webSocketPort,
+                streamPort,
+                frameRate,
+                bitRate,
+                previewVisible,
+            }
+        
+            ipcRenderer.send("updateSettings", settings);
+            setError(null);
+            setSaveFinished(true);
+        } catch (err) {
+            setError(err);
+            setSaveFinished(true);
+        }
+    };
+
+    const checkForUpdate = () => {
+        setCheckingForUpdate(true);
+        fetch("https://api.github.com/repos/nathan-fiscaletti/advanced-screen-streamer/releases/latest")
+            .then(res => res.json())
+            .then(release => {
+                if (release.tag_name !== `v${version}`) {
+                    setUpdate(release);
+                } else {
+                    setShowUpToDate(true);
+                }
+            })
+            .catch(err => {})
+            .finally(() => setCheckingForUpdate(false));
+    };
+
+    return (<>
+        <AppBar position="static" sx={{ bgcolor: 'background.paper', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', px: 3 }}>
+            <Tabs variant='fullWidth' sx={{ flexGrow: 1 }} value={selectedTab} onChange={(e, newValue) => setSelectedTab(newValue)}>
+                <Tab label="Settings" />
+                <Tab label="About" />
+            </Tabs>
+            {selectedTab === 0 && (
+                <Tooltip title="Save Settings" placement="bottom" arrow>
+                    <Button
+                        variant="contained"
+                        size="medium"
+                        endIcon={
+                            <SaveOutlinedIcon sx={{ ml: -1.5 }} />
+                        }
+                        onClick={() => save()}
+                        sx={{ my: 1, ml: 1 }}
+                    />
+                </Tooltip>
             )}
+        </AppBar>
 
-            {platform === 'darwin' && (
-                <div style={{ display: 'flex', flexDirection: 'column', marginTop: '16px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <div style={{ marginRight: '16px', width: '200px' }}>Frame Rate (fps):</div>
-                        <div style={{ width: '200px' }}>
-                            <input type="number" id="frameRate" style={{ width: '100%' }} min="1" max="240" />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <div style={{ marginRight: '16px', width: '200px' }}>Bit Rate (kbps):</div>
-                        <div style={{ width: '200px' }}>
-                            <input type="number" id="bitRate" style={{ width: '100%' }} min="1" max="100000" />
-                        </div>
-                    </div>
-                </div>
-            )}
+        <Dialog
+            open={update !== null}
+            TransitionComponent={SlideUpDialogTransition}
+            keepMounted
+            onClose={() => setUpdate(null)}
+        >
+            <DialogTitle>Update Available</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Version {update && update.tag_name.replace("v", "")} of Advanced Screen Streamer is now available for
+                    download. It is recommended that you download and install this newer version of the
+                    application in order to ensure that you have the latest features and bug fixes.
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => shell.openExternal(update.html_url)}>Download Update</Button>
+            </DialogActions>
+        </Dialog>
 
-            <div style={{ display: 'flex', flexDirection: 'column', marginTop: '16px' }}>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: '16px' }}>
-                    <div style={{ marginRight: '16px', width: '200px' }}></div>
-                    <div style={{ width: '200px', textAlign: 'right' }}>
-                        <div
-                            style={{
-                                padding: '8px',
-                                border: '1px solid green',
-                                backgroundColor: saveHover ? 'green' : 'black',
-                                color: saveHover ? 'white' : 'green',
-                                textAlign: 'center',
-                                cursor: 'pointer'
-                            }}
-                            onMouseEnter={() => setSaveHover(true)}
-                            onMouseLeave={() => setSaveHover(false)}
-                            onClick={() => saveSettings()}
-                        >
-                            <FontAwesomeIcon icon={faFloppyDisk} /> Save
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+        {selectedTab === 0 && (
+            <Box 
+                display="flex"
+                flexDirection="column"
+                width="100%"
+                padding={3}>
+                <Snackbar open={saveFinished} anchorOrigin={{ vertical: "bottom", horizontal: 'center' }} autoHideDuration={4000} onClose={() => setSaveFinished(false)}>
+                    <Alert
+                        severity={error ? 'warning' : 'success'}
+                        onClose={() => setSaveFinished(false)}
+                        variant="filled"
+                        sx={{ width: '100%', mb: 4, ml: 3, mr: 3 }}
+                    >
+                        <AlertTitle>{error ? "Error" : 'Settings Saved!'}</AlertTitle>
+                        {error ? error.message : "The settings have been saved successfully."}
+                    </Alert>
+                </Snackbar>
+
+                <Paper elevation={3} sx={{ p: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Typography variant="h6">Application Settings</Typography>
+                        <SettingsIcon />
+                    </Box>
+                    <Typography variant="body2" color="gray" sx={{ marginTop: 1 }}>
+                        These settings are used to adjust how the screen capture software communicates with the application. The default values should work for most users.
+                    </Typography>
+                    <Box display="flex" flexDirection="column" justifyContent="center" gap={2} marginTop={2}>
+                        <TextField required size="small" label="Web Socket Port" type="number" variant="outlined" value={webSocketPort} onChange={e => setWebSocketPort(e.target.value)} InputProps={{ min: 255, max: 65535 }} />
+                        <TextField required size="small" label="Stream Port" type="number" variant="outlined" value={streamPort} onChange={e => setStreamPort(e.target.value)} InputProps={{ min: 255, max: 65535 }} />
+                    </Box>
+                </Paper>
+                <Paper elevation={3} sx={{ p: 2, mt: 3 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Typography variant="h6">Stream Settings</Typography>
+                        <SettingsIcon />
+                    </Box>
+                    <Typography variant="body2" color="gray" sx={{ marginTop: 1 }}>
+                        These settings are used to adjust the invocation of the screen capture process. The default values should work for most users.
+                    </Typography>
+                    <Box display="flex" flexDirection="column" justifyContent="center" gap={2} marginTop={2}>
+                        <FormControl fullWidth sx={{ mt: 1 }}>
+                            <InputLabel id="screen-capture-backend-label">Screen Capture Backend</InputLabel>
+                            <Select
+                                size="small"
+                                labelId="screen-capture-backend-label"
+                                label="Screen Capture Backend"
+                                value={0}
+                                disabled
+                            >
+                                <MenuItem value={0}>FFmpeg</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <Box display="flex" flexDirection="column" sx={{ mt: 1 }}>
+                            <Typography>
+                                Frame Rate
+                            </Typography>
+                            <Box display="flex" flexDirection="row" alignItems="center" gap={3}>
+                                <PrettoSlider
+                                    value={frameRate}
+                                    size="small"
+                                    min={15}
+                                    max={240}
+                                    step={15}
+                                    onChange={(e, newValue) => setFrameRate(newValue)}
+                                />
+                                <TextField 
+                                    required
+                                    size="small"
+                                    id="frameRate"
+                                    type="number"
+                                    variant="outlined"
+                                    value={frameRate}
+                                    onChange={(e) => setFrameRate(e.target.value)}
+                                    sx={{ minWidth: "155px" }}
+                                    onBlur={() => { if (frameRate < 15) setFrameRate(15); else if (frameRate > 240) setFrameRate(240); }}
+                                    InputProps={{
+                                        min: 15,
+                                        max: 240,
+                                        endAdornment: <InputAdornment position="end">fps</InputAdornment>
+                                    }}
+                                />
+                            </Box>
+                        </Box>
+                        <Box display="flex" flexDirection="column">
+                            <Typography>
+                                Bit Rate
+                            </Typography>
+                            <Box display="flex" flexDirection="row" alignItems="center" gap={3}>
+                                <PrettoSlider
+                                    value={bitRate}
+                                    size="small"
+                                    min={1000}
+                                    max={1000000}
+                                    step={10000}
+                                    onChange={(e, newValue) => setBitRate(newValue)}
+                                />
+                                <TextField 
+                                    required
+                                    size="small"
+                                    id="bitRate"
+                                    type="number"
+                                    variant="outlined"
+                                    value={bitRate}
+                                    onChange={(e) => setBitRate(e.target.value)}
+                                    sx={{ minWidth: "155px" }}
+                                    onBlur={() => { if (bitRate < 1000) setFrameRate(1000); else if (bitRate > 1000000) setFrameRate(1000000); }}
+                                    InputProps={{
+                                        min: 1000,
+                                        max: 1000000,
+                                        endAdornment: <InputAdornment position="end">kbps</InputAdornment>
+                                    }}
+                                />
+                            </Box>
+                        </Box>
+                    </Box>
+                    <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" marginTop={2}>
+                        <Typography variant="body2" color="gray" >
+                            Show a preview of the selected region while streaming.
+                        </Typography>
+                        <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
+                            <Divider variant='middle' orientation='vertical' flexItem />
+                            <Checkbox checked={previewVisible} onChange={(_, checked) => setPreviewVisible(checked)} />
+                        </Box>
+                    </Box>
+                    {platform === 'win32' && (
+                        <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
+                            <Typography variant="body2" color="gray" >
+                                Show a border around the selected region while streaming.
+                            </Typography>
+                            <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
+                                <Divider variant='middle' orientation='vertical' flexItem />
+                                <Checkbox checked={showRegion} onChange={(_, checked) => setShowRegion(checked)} />
+                            </Box>
+                        </Box>
+                    )}
+                </Paper>
+            </Box>
+        )}
+        
+        {selectedTab === 1 && (
+            <Box 
+                display="flex"
+                flexDirection="column"
+                width="100%"
+                padding={3}>
+                <Collapse in={showUpToDate}>
+                    <Alert
+                        severity='success'
+                        onClose={() => setShowUpToDate(false)}
+                        variant="filled"
+                        sx={{ width: '100%', mb: 2 }}
+                    >
+                        <AlertTitle>{error ? "Error" : 'Up to date!'}</AlertTitle>
+                        {error ? error.message : "You are running the latest version of Advanced Screen Streamer."}
+                    </Alert>
+                </Collapse>
+
+                <Collapse in={!!updateError}>
+                    <Alert
+                        severity='warning'
+                        onClose={() => setUpdateError(null)}
+                        variant="filled"
+                        sx={{ width: '100%', mb: 2 }}
+                    >
+                        <AlertTitle>Error</AlertTitle>
+                        {updateError && updateError.message}
+                    </Alert>
+                </Collapse>
+
+                <Paper elevation={3} sx={{ p: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Typography variant="h6">Advanced Screen Streamer</Typography>
+                        <InfoOutlinedIcon />
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', mt: 1 }} gap={1}>
+                        <CheckCircleOutlineIcon fontSize="inherit" color="disabled" />
+                        <Typography variant="body2" color="gray" sx={{ mt: 0.40 }}>
+                            Version {version}
+                        </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', mt: 1 }} gap={1}>
+                        <PersonOutlinedIcon fontSize="inherit" color="disabled" />
+                        <Typography variant="body2" color="gray" sx={{ mt: 0.40 }}>
+                            Created by <Link sx={{ cursor: 'pointer' }} onClick={() => shell.openExternal("https://github.com/nathan-fiscaletti")}>Nathan Fiscaletti</Link>
+                        </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', mt: 1 }} gap={1}>
+                        <GavelOutlinedIcon fontSize="inherit" color="disabled" />
+                        <Typography variant="body2" color="gray" sx={{ mt: 0.40 }}>
+                            Licensed under the <Link sx={{ cursor: 'pointer' }} onClick={() => shell.openExternal("https://en.wikipedia.org/wiki/MIT_License")}>MIT License</Link>
+                        </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', mt: 1 }} gap={1}>
+                        <GitHubIcon fontSize="inherit" color="disabled" />
+                        <Typography variant="body2" color="gray" sx={{ mt: 0.40 }}>
+                            nathan-fiscaletti/advanced-screen-streamer (<Link sx={{ cursor: 'pointer' }} onClick={() => shell.openExternal("https://github.com/nathan-fiscaletti/advanced-screen-streamer")}>View on Github</Link>)
+                        </Typography>
+                    </Box>
+                    <LoadingButton
+                        variant="outlined"
+                        size="medium"
+                        loading={checkingForUpdate}
+                        onClick={() => checkForUpdate()}
+                        sx={{ mt: 2 }}
+                        fullWidth
+                    >
+                        Check for Update
+                    </LoadingButton>
+                </Paper>
+
+                <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Typography variant="h6">Attribution</Typography>
+                        {/* <InfoOutlinedIcon /> */}
+                    </Box>
+                    <Typography variant="body2" color="gray" sx={{ marginTop: 1 }}>
+                        @cycjimmy/jsmpeg-player (<Link sx={{ cursor: 'pointer' }} onClick={() => shell.openExternal("https://github.com/cycjimmy/jsmpeg-player")}>View on Github</Link>)
+                    </Typography>
+                    <Typography variant="body2" color="gray" sx={{ marginTop: 1 }}>
+                        MaterialUI (<Link sx={{ cursor: 'pointer' }} onClick={() => shell.openExternal("https://mui.com/")}>Open Website</Link>)
+                    </Typography>
+                </Paper>
+            </Box>
+        )}
+    </>);
 }

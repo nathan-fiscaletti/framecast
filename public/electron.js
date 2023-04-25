@@ -14,7 +14,6 @@ const settingsDir = path.join(userDir, 'advanced-screen-streamer');
 const settingsFile = path.join(settingsDir, 'settings.json');
 
 const defaultDimensions = { width: 350, height: 1 };
-let settingsWindowPosition = { x: 0, y: 0 };
 let streamRegion = { x: 0, y: 0, width: 500, height: 500 };
 let streamProcess;
 let socketRelay;
@@ -27,7 +26,7 @@ const settings = {
   webSocketPort: 9065,
   streamPort: 9066,
   frameRate: 60,
-  bitRate: 10000,
+  bitRate: 100000,
   previewVisible: false,
   showRegion: true,
 };
@@ -66,6 +65,10 @@ ipcMain.on("getSettings", (event) => {
   event.sender.send("settings", settings);
 });
 
+ipcMain.on("closeSettingsWindow", (event) => {
+  windows.closeSettingsWindow();
+});
+
 ipcMain.on("updateSettings", (event, newSettings) => {
   settings.webSocketPort = newSettings.webSocketPort;
   settings.streamPort = newSettings.streamPort;
@@ -80,7 +83,6 @@ ipcMain.on("updateSettings", (event, newSettings) => {
     console.error(err);
   }
 
-  windows.closeSettingsWindow();
   if(isStreaming()) {
     stopStream();
     startStream();
@@ -91,8 +93,11 @@ ipcMain.on("selectRegion", (event) => {
   selectRegionHandler();
 });
 
-ipcMain.on("showSettings", (event) => {
-  settingsHandler();
+ipcMain.on("showSettings", (event, props) => {
+  if (!props) {
+    props = { tab: 0 };
+  }
+  settingsHandler(props);
 });
 
 ipcMain.on("startStream", (event) => {
@@ -142,6 +147,7 @@ function stopStream() {
   if (windows.getViewWindow() && !windows.getViewWindow().isDestroyed()) {
     windows.getViewWindow().setClosable(true);
     windows.getViewWindow().close();
+    windows.setViewWindow(null);
   }
 }
 
@@ -157,11 +163,16 @@ function stopStreamHandler() {
   stopStream();
 }
 
-function settingsHandler() {
-  createSettingsWindow();
+function settingsHandler(props) {
+  createSettingsWindow(props);
 }
 
 function createRegionSelectionWindow() {
+  if (windows.getRegionSelectionWindow() && !windows.getRegionSelectionWindow().isDestroyed()) {
+    windows.getRegionSelectionWindow().focus();
+    return;
+  }
+
   const regionSelectionWindow = new BrowserWindow({
     parent: windows.getControlWindow(),
     ...streamRegion,
@@ -198,42 +209,37 @@ function createRegionSelectionWindow() {
   // }
 }
 
-function createSettingsWindow() {
-  const settingsWindow = new BrowserWindow({
-    parent: windows.getControlWindow(),
-    modal: true,
-    center: true,
-    width: 464,
-    height: 432,
-    x: settingsWindowPosition.x,
-    y: settingsWindowPosition.y,
-    maximizable: false,
-    autoHideMenuBar: true,
-    alwaysOnTop: true,
-    resizable: false,
-    roundedCorners: false,
-    minimizable: false,
-    title: "Settings",
-    webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule: true,
-      contextIsolation: false
-    }
-  });
-
-  settingsWindow.on("move", () => {
-    settingsWindowPosition.x = settingsWindow.getPosition()[0];
-    settingsWindowPosition.y = settingsWindow.getPosition()[1];
-  });
-
-  windows.setSettingsWindow(settingsWindow);
+function createSettingsWindow(props = { tab: 0 }) {
+  if (windows.getSettingsWindow() && !windows.getSettingsWindow().isDestroyed()) {
+    windows.getSettingsWindow().focus();
+  } else {
+    const settingsWindow = new BrowserWindow({
+      parent: windows.getControlWindow(),
+      center: true,
+      width: 550,
+      height: 850,
+      maximizable: false,
+      autoHideMenuBar: true,
+      alwaysOnTop: true,
+      roundedCorners: false,
+      minimizable: false,
+      title: "Advanced Screen Streamer - Settings",
+      webPreferences: {
+        nodeIntegration: true,
+        enableRemoteModule: true,
+        contextIsolation: false
+      }
+    });
+  
+    windows.setSettingsWindow(settingsWindow);
+  }
 
   // In production, set the initial browser path to the local bundle generated
   // by the Create React App build process.
   // In development, set it to localhost to allow live/hot-reloading.
   const appURL = app.isPackaged
-  ? `file://${__dirname}/index.html?content=settings&platform=${process.platform}`
-    : `http://localhost:3000?content=settings&platform=${process.platform}`;
+  ? `file://${__dirname}/index.html?content=settings&platform=${process.platform}&version=${app.getVersion()}&tab=${props.tab}`
+    : `http://localhost:3000?content=settings&platform=${process.platform}&version=${app.getVersion()}&tab=${props.tab}`;
   windows.getSettingsWindow().loadURL(appURL);
   // Automatically open Chrome's DevTools in development mode.
   // if (!app.isPackaged) {
@@ -246,7 +252,7 @@ function createControlWindow() {
     modal: true,
     center: true,
     width: 432,
-    height: 107,
+    height: 140,
     maximizable: false,
     minimizable: false,
     autoHideMenuBar: true,
@@ -270,12 +276,6 @@ function createControlWindow() {
     }
   });
 
-  // controlWindow.on("focus", () => {
-  //   if (windows.getViewWindow() && !windows.getViewWindow().isDestroyed() && windows.getViewWindow().getOpacity() !== 0) {
-  //     windows.getViewWindow().moveTop();
-  //   }
-  // })
-
   controlWindow.on("closed", () => {
     process.exit(0);
   });
@@ -297,6 +297,11 @@ function createControlWindow() {
 
 // Create the native browser window.
 function createViewWindow() {
+  if (windows.getViewWindow() && !windows.getViewWindow().isDestroyed()) {
+    windows.getViewWindow().focus();
+    return;
+  }
+
   const viewWindow = new BrowserWindow({
     ...defaultDimensions,
     x: windows.getControlWindow().getPosition()[0],

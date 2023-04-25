@@ -1,58 +1,60 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
+
+import { Box, Button, Typography } from '@mui/material';
+
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 
 const { ipcRenderer } = window.require('electron');
 
 export default function Selector() {
-    const [saveHover, setSaveHover] = React.useState(false);
-    const [cancelHover, setCancelHover] = React.useState(false);
-
     return (
-        <div style={{ 
-            cursor: 'pointer',
-            WebkitUserSelect: "none",
-            WebkitAppRegion: "drag",
-            width: "100%",
-            height: "100vh",
-            backgroundColor: "black",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-        }}>
-            <h3 style={{ color: 'white', textAlign: 'center', marginBottom: '16px' }}>Resize / Position Window to Select Region</h3>
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                <div
-                    style={{
-                        WebkitAppRegion: 'no-drag',
-                        padding: '8px',
-                        border: '1px solid red',
-                        backgroundColor: cancelHover ? 'red' : 'black',
-                        color: cancelHover ? 'white' : 'red',
-                        marginRight: '16px'
-                    }}
-                    onMouseEnter={() => setCancelHover(true)}
-                    onMouseLeave={() => setCancelHover(false)}
+        <Box 
+            sx={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                height: '100vh',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}
+            style={{
+                WebkitUserSelect: "none",
+                WebkitAppRegion: "drag",
+                cursor: 'pointer',
+            }}
+        >
+            <Typography variant="h6">
+                Resize / Position Window to Select Region
+            </Typography>
+            <Box 
+                sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', mt: 1 }}
+            >
+                <Button 
+                    fullWidth
+                    size="large"
+                    variant="outlined"
+                    color="warning"
                     onClick={() => ipcRenderer.send('closeRegionSelector')}
+                    sx={{ mr: 1 }}
+                    style={{ WebkitAppRegion: 'no-drag', }}
+                    startIcon={<CancelOutlinedIcon />}
                 >
-                    <FontAwesomeIcon icon={faXmark} /> Cancel
-                </div>
-                <div 
-                    style={{ 
-                        WebkitAppRegion: 'no-drag',
-                        padding: '8px',
-                        border: '1px solid green',
-                        backgroundColor: saveHover ? 'green' : 'black',
-                        color: saveHover ? 'white' : 'green'
-                    }}
-                    onMouseEnter={() => setSaveHover(true)}
-                    onMouseLeave={() => setSaveHover(false)}
+                    Cancel
+                </Button>
+                <Button 
+                    fullWidth
+                    size="large"
+                    variant="contained"
+                    color="success"
                     onClick={() => ipcRenderer.send('saveRegion')}
+                    sx={{ mr: 1 }}
+                    style={{ WebkitAppRegion: 'no-drag', }}
+                    startIcon={<SaveOutlinedIcon />}
                 >
-                    <FontAwesomeIcon icon={faFloppyDisk} /> Save Selection
-                </div>
-            </div>
-        </div>
+                    Save
+                </Button>
+            </Box>
+        </Box>
     );
 }
