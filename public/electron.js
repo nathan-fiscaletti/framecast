@@ -13,6 +13,7 @@ const userDir = process.env.APPDATA || (process.platform === 'darwin' ? process.
 const settingsDir = path.join(userDir, 'advanced-screen-streamer');
 const settingsFile = path.join(settingsDir, 'settings.json');
 
+const settingsWindowLocation = { x: -1, y: -1 };
 const defaultDimensions = { width: 350, height: 1 };
 let streamRegion = { x: 0, y: 0, width: 500, height: 500 };
 let streamProcess;
@@ -186,6 +187,7 @@ function createRegionSelectionWindow() {
     width: streamRegion.width,
     height: streamRegion.height,
     title: "Select Recording Region",
+    icon: path.join(__dirname, "icon.png"),
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
@@ -216,6 +218,10 @@ function createSettingsWindow(props = { tab: 0 }) {
     const settingsWindow = new BrowserWindow({
       parent: windows.getControlWindow(),
       center: true,
+      ...(
+        settingsWindowLocation.x !== -1 &&
+        settingsWindowLocation.y !== -1 ? settingsWindowLocation : {}
+      ),
       width: 550,
       height: 850,
       maximizable: false,
@@ -223,12 +229,19 @@ function createSettingsWindow(props = { tab: 0 }) {
       alwaysOnTop: true,
       roundedCorners: false,
       minimizable: false,
+      icon: path.join(__dirname, "icon.png"),
       title: "Advanced Screen Streamer - Settings",
       webPreferences: {
         nodeIntegration: true,
         enableRemoteModule: true,
         contextIsolation: false
       }
+    });
+
+    settingsWindow.on("move", () => {
+      const [x, y] = settingsWindow.getPosition();
+      settingsWindowLocation.x = x;
+      settingsWindowLocation.y = y;
     });
   
     windows.setSettingsWindow(settingsWindow);
@@ -259,6 +272,7 @@ function createControlWindow() {
     alwaysOnTop: true,
     resizable: false,
     roundedCorners: false,
+    icon: path.join(__dirname, "icon.png"),
     title: "Advanced Screen Streamer",
     webPreferences: {
       nodeIntegration: true,
@@ -309,6 +323,7 @@ function createViewWindow() {
     useContentSize: true,
     skipTaskbar: true,
     maximizable: false,
+    icon: path.join(__dirname, "icon.png"),
     closable: false,
     title: "Advanced Screen Streamer - Viewer",
     minimizable: false,

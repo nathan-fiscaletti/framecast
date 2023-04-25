@@ -345,6 +345,7 @@ export default function Settings() {
                 flexDirection="column"
                 width="100%"
                 padding={3}>
+                <img src="./icon.png" alt="logo" width="200" height="200" style={{ alignSelf: 'center', marginBottom: '32px', marginTop: '8px' }} />
                 <Collapse in={showUpToDate}>
                     <Alert
                         severity='success'
