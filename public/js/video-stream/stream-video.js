@@ -31,6 +31,14 @@ module.exports = {
                 break;
             }
 
+            case 'linux': {
+                args = [
+                    '-video_size', `${width}x${height}`, `-framerate`, `${frameRate}`, ...(showRegion ? ['-show_region', '1', '-region_border', '8'] : []), '-f', 'x11grab', '-i', `:0.0+${offsetX},${offsetY}`,
+                    "-f", "mpegts", "-codec:v", "mpeg1video", "-s", `${width}x${height}`, "-b:v", bitRate, "-bf", "0", `http://localhost:${streamPort}/${streamSecret}`
+                ];
+                break;
+            }
+
             case 'darwin': {
                 // Determine the FFmpeg index for the screen on which the recording
                 // will be made. This is necessary because the index is not the same

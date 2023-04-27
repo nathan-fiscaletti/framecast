@@ -52,6 +52,8 @@ function createViewWindow({ app }) {
     // if (!app.isPackaged) {
     //   getViewWindow().webContents.openDevTools();
     // }
+
+    getControlWindow().focus();
 }
 
 function getViewWindow() {
@@ -152,7 +154,7 @@ function createSettingsWindow({ app = {}, tab = 0 }) {
         ? `file://${__dirname}/../index.html?content=settings&platform=${process.platform}&version=${app.getVersion()}&tab=${tab}`
         : `http://localhost:3000?content=settings&platform=${process.platform}&version=${app.getVersion()}&tab=${tab}`;
     getSettingsWindow().loadURL(appURL);
-    
+
     // Automatically open Chrome's DevTools in development mode.
     // if (!app.isPackaged) {
     //   getSettingsWindow().webContents.openDevTools();
@@ -177,7 +179,7 @@ function createControlWindow({ app, screen }) {
         alwaysOnTop: true,
         resizable: false,
         roundedCorners: false,
-        icon: path.join(__dirname, "..",  "icon.png"),
+        icon: path.join(__dirname, "..", "icon.png"),
         title: "Advanced Screen Streamer",
         webPreferences: {
             nodeIntegration: true,

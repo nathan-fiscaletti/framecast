@@ -12,6 +12,7 @@ const settings = {
     bitRate: 100000,
     previewVisible: false,
     showRegion: true,
+    regionBorderSize: 4,
 };
 
 function initialize() {
@@ -20,11 +21,11 @@ function initialize() {
         if (!fs.existsSync(settingsDir)) {
             fs.mkdirSync(settingsDir);
         }
-    
-        if(!fs.existsSync(settingsFile)) {
+
+        if (!fs.existsSync(settingsFile)) {
             fs.writeFileSync(settingsFile, JSON.stringify(settings));
         }
-    
+
         const loadedSettings = JSON.parse(fs.readFileSync(settingsFile));
         Object.assign(settings, loadedSettings);
     } catch (err) {

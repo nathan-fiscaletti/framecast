@@ -12,6 +12,12 @@ settings.initialize();
 // the renderer process.
 ipcHandlers.initialize(app, ipcMain, screen);
 
+// This is required to get transparency working on linux.
+if (process.platform === 'linux') {
+    app.commandLine.appendSwitch('enable-transparent-visuals');
+    app.disableHardwareAcceleration();
+}
+
 // Create the initial control window once the application is ready.
 app.whenReady().then(async () => {
     windows.createControlWindow({ app, screen });

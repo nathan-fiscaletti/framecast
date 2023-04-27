@@ -1,13 +1,13 @@
 import React from 'react';
 
 import { styled } from '@mui/material/styles';
-import { 
+import {
     AppBar, Checkbox, Box, Button, Divider, TextField,
     Typography, Tabs, Tab, Tooltip, Snackbar, Alert,
     AlertTitle, Paper, Collapse, Slider, InputAdornment,
     Link, Select, MenuItem, FormControl, InputLabel,
     Slide, Dialog, DialogTitle, DialogContent,
-    DialogActions, DialogContentText 
+    DialogActions, DialogContentText
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
@@ -25,40 +25,40 @@ const PrettoSlider = styled(Slider)({
     color: '#52af77',
     height: 8,
     '& .MuiSlider-track': {
-      border: 'none',
+        border: 'none',
     },
     '& .MuiSlider-thumb': {
-      height: 24,
-      width: 24,
-      backgroundColor: '#fff',
-      border: '2px solid currentColor',
-      '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
-        boxShadow: 'inherit',
-      },
-      '&:before': {
-        display: 'none',
-      },
+        height: 24,
+        width: 24,
+        backgroundColor: '#fff',
+        border: '2px solid currentColor',
+        '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
+            boxShadow: 'inherit',
+        },
+        '&:before': {
+            display: 'none',
+        },
     },
     '& .MuiSlider-valueLabel': {
-      lineHeight: 1.2,
-      fontSize: 12,
-      background: 'unset',
-      padding: 0,
-      width: 32,
-      height: 32,
-      borderRadius: '50% 50% 50% 0',
-      backgroundColor: '#52af77',
-      transformOrigin: 'bottom left',
-      transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
-      '&:before': { display: 'none' },
-      '&.MuiSlider-valueLabelOpen': {
-        transform: 'translate(50%, -100%) rotate(-45deg) scale(1)',
-      },
-      '& > *': {
-        transform: 'rotate(45deg)',
-      },
+        lineHeight: 1.2,
+        fontSize: 12,
+        background: 'unset',
+        padding: 0,
+        width: 32,
+        height: 32,
+        borderRadius: '50% 50% 50% 0',
+        backgroundColor: '#52af77',
+        transformOrigin: 'bottom left',
+        transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
+        '&:before': { display: 'none' },
+        '&.MuiSlider-valueLabelOpen': {
+            transform: 'translate(50%, -100%) rotate(-45deg) scale(1)',
+        },
+        '& > *': {
+            transform: 'rotate(45deg)',
+        },
     },
-  });
+});
 
 const SlideUpDialogTransition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -75,21 +75,28 @@ export default function Settings() {
     const [showRegion, setShowRegion] = React.useState(false);
     const [frameRate, setFrameRate] = React.useState(0);
     const [bitRate, setBitRate] = React.useState(0);
+    const [regionBorderSize, setRegionBorderSize] = React.useState(1);
 
     React.useEffect(() => {
-        document.querySelector("body").style = "overflow: auto;";
+        document.querySelector("body").style = "overflow-y: scroll;";
 
         ipcRenderer.on("settings", (event, settings) => {
             const urlParams = new URLSearchParams(window.location.search);
             const platform = urlParams.get('platform');
-        
-            switch(platform) {
+
+            switch (platform) {
+                case 'linux': {
+                    setRegionBorderSize(settings.regionBorderSize);
+                    setShowRegion(settings.showRegion);
+                    break;
+                }
+
                 case 'win32': {
                     setShowRegion(settings.showRegion);
                     break;
                 }
-        
-                default: {}
+
+                default: { }
             }
 
             setFrameRate(settings.frameRate);
@@ -116,24 +123,32 @@ export default function Settings() {
         try {
             let settings;
 
-            switch(platform) {
+            switch (platform) {
+                case 'linux': {
+                    settings = {
+                        regionBorderSize,
+                        showRegion,
+                    };
+                    break;
+                }
+
                 case 'win32': {
                     settings = {
                         showRegion,
                     };
                     break;
                 }
-        
+
                 case 'darwin': {
                     settings = {
                         showRegion: true,
                     };
                     break;
                 }
-        
-                default: {}
+
+                default: { }
             }
-            
+
             settings = {
                 ...settings,
                 webSocketPort,
@@ -142,7 +157,7 @@ export default function Settings() {
                 bitRate,
                 previewVisible,
             }
-        
+
             ipcRenderer.send("updateSettings", settings);
             setError(null);
             setSaveFinished(true);
@@ -163,12 +178,12 @@ export default function Settings() {
                     setShowUpToDate(true);
                 }
             })
-            .catch(err => {})
+            .catch(err => { })
             .finally(() => setCheckingForUpdate(false));
     };
 
     return (<>
-        <AppBar position="static" sx={{ bgcolor: 'background.paper', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', px: 3 }}>
+        <AppBar position="sticky" sx={{ bgcolor: 'background.paper', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', px: 3 }}>
             <Tabs variant='fullWidth' sx={{ flexGrow: 1 }} value={selectedTab} onChange={(e, newValue) => setSelectedTab(newValue)}>
                 <Tab label="Settings" />
                 <Tab label="About" />
@@ -208,7 +223,7 @@ export default function Settings() {
         </Dialog>
 
         {selectedTab === 0 && (
-            <Box 
+            <Box
                 display="flex"
                 flexDirection="column"
                 width="100%"
@@ -246,7 +261,7 @@ export default function Settings() {
                     <Typography variant="body2" color="gray" sx={{ marginTop: 1 }}>
                         These settings are used to adjust the invocation of the screen capture process. The default values should work for most users.
                     </Typography>
-                    <Box display="flex" flexDirection="column" justifyContent="center" gap={2} marginTop={2}>
+                    <Box display="flex" flexDirection="column" justifyContent="center" marginTop={2}>
                         <FormControl fullWidth sx={{ mt: 1 }}>
                             <InputLabel id="screen-capture-backend-label">Screen Capture Backend</InputLabel>
                             <Select
@@ -256,9 +271,18 @@ export default function Settings() {
                                 value={0}
                                 disabled
                             >
-                                <MenuItem value={0}>FFmpeg</MenuItem>
+                                <MenuItem value={0}>FFmpeg (<i>-f {platform === 'win32' ? 'gdicapture' : (platform === 'darwin' ? 'avfoundation' : 'x11grab')}</i>)</MenuItem>
                             </Select>
                         </FormControl>
+                        <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1 }}>
+                            <Typography variant="body2" color="gray" >
+                                Show a preview of the selected region while streaming.
+                            </Typography>
+                            <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
+                                <Divider variant='middle' orientation='vertical' flexItem />
+                                <Checkbox checked={previewVisible} onChange={(_, checked) => setPreviewVisible(checked)} />
+                            </Box>
+                        </Box>
                         <Box display="flex" flexDirection="column" sx={{ mt: 1 }}>
                             <Typography>
                                 Frame Rate
@@ -272,7 +296,7 @@ export default function Settings() {
                                     step={15}
                                     onChange={(e, newValue) => setFrameRate(newValue)}
                                 />
-                                <TextField 
+                                <TextField
                                     required
                                     size="small"
                                     id="frameRate"
@@ -290,7 +314,7 @@ export default function Settings() {
                                 />
                             </Box>
                         </Box>
-                        <Box display="flex" flexDirection="column">
+                        <Box display="flex" flexDirection="column" sx={{ mt: 1 }}>
                             <Typography>
                                 Bit Rate
                             </Typography>
@@ -303,7 +327,7 @@ export default function Settings() {
                                     step={10000}
                                     onChange={(e, newValue) => setBitRate(newValue)}
                                 />
-                                <TextField 
+                                <TextField
                                     required
                                     size="small"
                                     id="bitRate"
@@ -322,32 +346,60 @@ export default function Settings() {
                             </Box>
                         </Box>
                     </Box>
-                    <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" marginTop={2}>
-                        <Typography variant="body2" color="gray" >
-                            Show a preview of the selected region while streaming.
-                        </Typography>
-                        <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
-                            <Divider variant='middle' orientation='vertical' flexItem />
-                            <Checkbox checked={previewVisible} onChange={(_, checked) => setPreviewVisible(checked)} />
-                        </Box>
-                    </Box>
-                    {platform === 'win32' && (
-                        <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
+                    {(platform === 'win32' || platform === 'linux') && (<>
+                        <Typography sx={{ mt: 2 }}>Region Visibility</Typography>
+                        <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" gap={1} sx={{ mt: 1 }}>
                             <Typography variant="body2" color="gray" >
-                                Show a border around the selected region while streaming.
+                                Show a border around the selected region while streaming.{platform === 'linux' && (<><br />(This feature is only supported on XCB-based x11grab)</>)}
                             </Typography>
                             <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
                                 <Divider variant='middle' orientation='vertical' flexItem />
                                 <Checkbox checked={showRegion} onChange={(_, checked) => setShowRegion(checked)} />
                             </Box>
                         </Box>
+                    </>)}
+
+                    {platform === 'linux' && (
+                        <Collapse in={showRegion}>
+                            <Box display="flex" flexDirection="column" justifyContent="center" gap={2} marginTop={1}>
+                                <Box display="flex" flexDirection="column" sx={{ mt: 1 }}>
+                                    <Box display="flex" flexDirection="row" alignItems="center" gap={3}>
+                                        <PrettoSlider
+                                            value={regionBorderSize}
+                                            size="small"
+                                            disabled={!showRegion}
+                                            min={1}
+                                            max={32}
+                                            onChange={(e, newValue) => setRegionBorderSize(newValue)}
+                                        />
+                                        <TextField
+                                            required
+                                            size="small"
+                                            id="regionBorderSize"
+                                            type="number"
+                                            variant="outlined"
+                                            value={regionBorderSize}
+                                            disabled={!showRegion}
+                                            onChange={(e) => setRegionBorderSize(e.target.value)}
+                                            sx={{ minWidth: "155px" }}
+                                            onBlur={() => { if (regionBorderSize < 1) setRegionBorderSize(1); else if (regionBorderSize > 32) setFrameRate(32); }}
+                                            InputProps={{
+                                                min: 15,
+                                                max: 240,
+                                                endAdornment: <InputAdornment position="end">px</InputAdornment>
+                                            }}
+                                        />
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </Collapse>
                     )}
                 </Paper>
             </Box>
         )}
-        
+
         {selectedTab === 1 && (
-            <Box 
+            <Box
                 display="flex"
                 flexDirection="column"
                 width="100%"
