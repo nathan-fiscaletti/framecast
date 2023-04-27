@@ -271,7 +271,7 @@ export default function Settings() {
                                 value={0}
                                 disabled
                             >
-                                <MenuItem value={0}>FFmpeg (<i>-f {platform === 'win32' ? 'gdicapture' : (platform === 'darwin' ? 'avfoundation' : 'x11grab')}</i>)</MenuItem>
+                                <MenuItem value={0}>FFmpeg (<i>-f {platform === 'win32' ? 'gdigrab' : (platform === 'darwin' ? 'avfoundation' : 'x11grab')}</i>)</MenuItem>
                             </Select>
                         </FormControl>
                         <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1 }}>
