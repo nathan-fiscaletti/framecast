@@ -26,7 +26,8 @@
       "target": "nsis"
     },
     "linux": {
-      "target": "deb"
+      "target": "deb",
+      "category": "AudioVideo"
     }
   },
   "dependencies": {
