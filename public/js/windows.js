@@ -28,7 +28,7 @@ function createViewWindow({ app }) {
         maximizable: false,
         icon: path.join(__dirname, "..", "icon.png"),
         closable: false,
-        title: "Advanced Screen Streamer - Viewer",
+        title: "FrameCast - Viewer",
         minimizable: false,
         frame: false,
         resizable: false,
@@ -133,7 +133,7 @@ function createSettingsWindow({ app = {}, tab = 0 }) {
             roundedCorners: false,
             minimizable: false,
             icon: path.join(__dirname, "..", "icon.png"),
-            title: "Advanced Screen Streamer - Settings",
+            title: "FrameCast - Settings",
             webPreferences: {
                 nodeIntegration: true,
                 enableRemoteModule: true,
@@ -180,7 +180,7 @@ function createControlWindow({ app, screen }) {
         resizable: false,
         roundedCorners: false,
         icon: path.join(__dirname, "..", "icon.png"),
-        title: "Advanced Screen Streamer",
+        title: "FrameCast",
         webPreferences: {
             nodeIntegration: true,
             enableRemoteModule: true,

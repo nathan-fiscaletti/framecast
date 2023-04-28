@@ -1,5 +1,5 @@
 {
-  "name": "advanced-screen-streamer",
+  "name": "frame-cast",
   "version": "1.0.7",
   "private": true,
   "homepage": "./",
@@ -11,7 +11,7 @@
   "main": "./public/electron.js",
   "build": {
     "appId": "com.github.nathan_fiscaletti.advanced_screen_streamer",
-    "productName": "Advanced Screen Streamer",
+    "productName": "FrameCast",
     "files": [
       "build/**/**/*",
       "node_modules/**/**/*"

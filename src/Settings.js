@@ -169,7 +169,7 @@ export default function Settings() {
 
     const checkForUpdate = () => {
         setCheckingForUpdate(true);
-        fetch("https://api.github.com/repos/nathan-fiscaletti/advanced-screen-streamer/releases/latest")
+        fetch("https://api.github.com/repos/nathan-fiscaletti/framecast/releases/latest")
             .then(res => res.json())
             .then(release => {
                 if (release.tag_name !== `v${version}`) {
@@ -212,7 +212,7 @@ export default function Settings() {
             <DialogTitle>Update Available</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Version {update && update.tag_name.replace("v", "")} of Advanced Screen Streamer is now available for
+                    Version {update && update.tag_name.replace("v", "")} of FrameCast is now available for
                     download. It is recommended that you download and install this newer version of the
                     application in order to ensure that you have the latest features and bug fixes.
                 </DialogContentText>
@@ -413,7 +413,7 @@ export default function Settings() {
                         sx={{ width: '100%', mb: 2 }}
                     >
                         <AlertTitle>{error ? "Error" : 'Up to date!'}</AlertTitle>
-                        {error ? error.message : "You are running the latest version of Advanced Screen Streamer."}
+                        {error ? error.message : "You are running the latest version of FrameCast."}
                     </Alert>
                 </Collapse>
 
@@ -431,7 +431,7 @@ export default function Settings() {
 
                 <Paper elevation={3} sx={{ p: 2 }}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Typography variant="h6">Advanced Screen Streamer</Typography>
+                        <Typography variant="h6">FrameCast</Typography>
                         <InfoOutlinedIcon />
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', mt: 1 }} gap={1}>
@@ -455,7 +455,7 @@ export default function Settings() {
                     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', mt: 1 }} gap={1}>
                         <GitHubIcon fontSize="inherit" color="disabled" />
                         <Typography variant="body2" color="gray" sx={{ mt: 0.40 }}>
-                            nathan-fiscaletti/advanced-screen-streamer (<Link sx={{ cursor: 'pointer' }} onClick={() => shell.openExternal("https://github.com/nathan-fiscaletti/advanced-screen-streamer")}>View on Github</Link>)
+                            nathan-fiscaletti/framecast (<Link sx={{ cursor: 'pointer' }} onClick={() => shell.openExternal("https://github.com/nathan-fiscaletti/framecast")}>View on Github</Link>)
                         </Typography>
                     </Box>
                     <LoadingButton
