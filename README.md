@@ -10,7 +10,7 @@ FrameCast is a powerful tool that can enhance your video conferencing experience
 
 ## Video Preview
 
-[![Preview](https://i.imgur.com/A7EOJ9l.png)](https://youtu.be/5-75Qg5y3yQ)
+[![Preview](https://i.imgur.com/4F3RiCd.png)](https://youtu.be/hPjuXTlpybg)
 
 ## Overview
 
