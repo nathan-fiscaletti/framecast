@@ -4,8 +4,6 @@
 
 # FrameCast
 
-[![Sponsor Me!](https://img.shields.io/badge/%F0%9F%92%B8-Sponsor%20Me!-4CAF50)](https://github.com/sponsors/nathan-fiscaletti)
-
 FrameCast is a powerful tool that can enhance your video conferencing experience by providing flexible screen sharing options that enable effective collaboration.
 
 [![Download for Windows](https://i.imgur.com/edpkPzv.png)](https://github.com/nathan-fiscaletti/framecast/releases/latest/download/FrameCast.Setup.win32.exe)
