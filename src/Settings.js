@@ -72,6 +72,7 @@ export default function Settings() {
     const [streamPort, setStreamPort] = React.useState(0);
     const [webSocketPort, setWebSocketPort] = React.useState(0);
     const [previewVisible, setPreviewVisible] = React.useState(false);
+    const [enableAnalytics, setEnableAnalytics] = React.useState(false);
     const [showRegion, setShowRegion] = React.useState(false);
     const [frameRate, setFrameRate] = React.useState(0);
     const [bitRate, setBitRate] = React.useState(0);
@@ -104,6 +105,7 @@ export default function Settings() {
             setStreamPort(settings.streamPort);
             setWebSocketPort(settings.webSocketPort);
             setPreviewVisible(settings.previewVisible);
+            setEnableAnalytics(settings.enableAnalytics);
         });
 
         ipcRenderer.send("getSettings");
@@ -156,6 +158,7 @@ export default function Settings() {
                 frameRate,
                 bitRate,
                 previewVisible,
+                enableAnalytics,
             }
 
             ipcRenderer.send("updateSettings", settings);
@@ -188,19 +191,17 @@ export default function Settings() {
                 <Tab label="Settings" />
                 <Tab label="About" />
             </Tabs>
-            {selectedTab === 0 && (
-                <Tooltip title="Save Settings" placement="bottom" arrow>
-                    <Button
-                        variant="contained"
-                        size="medium"
-                        endIcon={
-                            <SaveOutlinedIcon sx={{ ml: -1.5 }} />
-                        }
-                        onClick={() => save()}
-                        sx={{ my: 1, ml: 1 }}
-                    />
-                </Tooltip>
-            )}
+            <Tooltip title="Save Settings" placement="bottom" arrow>
+                <Button
+                    variant="contained"
+                    size="medium"
+                    endIcon={
+                        <SaveOutlinedIcon sx={{ ml: -1.5 }} />
+                    }
+                    onClick={() => save()}
+                    sx={{ my: 1, ml: 1 }}
+                />
+            </Tooltip>
         </AppBar>
 
         <Dialog
@@ -468,6 +469,30 @@ export default function Settings() {
                     >
                         Check for Update
                     </LoadingButton>
+                </Paper>
+
+                <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Typography variant="h6">Analytics</Typography>
+                        {/* <InfoOutlinedIcon /> */}
+                    </Box>
+                    <Box display="flex" flexDirection="column" justifyContent="center">
+                        <Typography variant="body2" color="gray" sx={{ marginTop: 1 }}>
+                            FrameCast periodically collects information about your system such as display resolution, operating system and operating system version in order to improve the application.
+                        </Typography>
+                        <Typography variant="body2" color="gray" sx={{ marginTop: 1 }} fontWeight="bold">
+                            FrameCast does not collect any personally identifiable information.
+                        </Typography>
+                        <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1 }}>
+                            <Typography variant="body2" color="white" >
+                                Share system information with FrameCast.
+                            </Typography>
+                            <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
+                                <Divider variant='middle' orientation='vertical' flexItem />
+                                <Checkbox checked={enableAnalytics} onChange={(_, checked) => setEnableAnalytics(checked)} />
+                            </Box>
+                        </Box>
+                    </Box>
                 </Paper>
 
                 <Paper elevation={3} sx={{ p: 2, mt: 2 }}>

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { v4: uuid } = require('uuid')
 
 const userDir = process.env.APPDATA || (process.platform === 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share");
 const settingsDir = path.join(userDir, 'advanced-screen-streamer');
@@ -13,6 +14,9 @@ const settings = {
     previewVisible: false,
     showRegion: true,
     regionBorderSize: 4,
+    enableAnalytics: true,
+    systemInformationReportedAt: null,
+    clientId: uuid(),
 };
 
 function initialize() {

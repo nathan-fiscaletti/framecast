@@ -1,3 +1,5 @@
+const { PostHog } = require('posthog-node');
+
 // Module to control the application lifecycle and the native browser window.
 const { app, BrowserWindow, ipcMain, screen, protocol } = require("electron");
 
@@ -20,6 +22,44 @@ if (process.platform === 'linux') {
 
 // Create the initial control window once the application is ready.
 app.whenReady().then(async () => {
+    // Report monitor count, size, and display scaling factor.
+    if (settings.get().enableAnalytics && !settings.get().systemInformationReported) {
+        (async () => {
+            const client = new PostHog(
+                'phc_q6GSeEJBJTIIlAlLwRxWxA8OvVNS2sn32mAEWcJZyZD',
+                { host: 'https://app.posthog.com' }
+            );
+
+            const displays = screen.getAllDisplays();
+            const displayInfo = displays.map((display, i) => {
+                return {
+                    id: display.id,
+                    bounds: display.bounds,
+                    workArea: display.workArea,
+                    scaleFactor: display.scaleFactor
+                };
+            });
+
+            client.capture({
+                distinctId: settings.get().clientId,
+                event: 'screen-information',
+                properties: {
+                    version: app.getVersion(),
+                    platform: process.platform,
+                    platformVersion: process.getSystemVersion(),
+                    displays: displayInfo
+                }
+            });
+
+            settings.set({
+                ...settings.get(),
+                systemInformationReported: true,
+            });
+
+            await client.shutdownAsync();
+        })();
+    }
+
     windows.createControlWindow({ app, screen });
 
     // On macOS it's common to re-create a window in the app when the
