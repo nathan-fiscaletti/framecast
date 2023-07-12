@@ -7,10 +7,12 @@ import {
     AlertTitle, Paper, Collapse, Slider, InputAdornment,
     Link, Select, MenuItem, FormControl, InputLabel,
     Slide, Dialog, DialogTitle, DialogContent,
-    DialogActions, DialogContentText
+    DialogActions, DialogContentText, Switch
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
+import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
+import AttributionIcon from '@mui/icons-material/Attribution';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
@@ -77,6 +79,7 @@ export default function Settings() {
     const [frameRate, setFrameRate] = React.useState(0);
     const [bitRate, setBitRate] = React.useState(0);
     const [regionBorderSize, setRegionBorderSize] = React.useState(1);
+    const [trackingId, setTrackingId] = React.useState(null);
 
     React.useEffect(() => {
         document.querySelector("body").style = "overflow-y: scroll;";
@@ -106,6 +109,7 @@ export default function Settings() {
             setWebSocketPort(settings.webSocketPort);
             setPreviewVisible(settings.previewVisible);
             setEnableAnalytics(settings.enableAnalytics);
+            setTrackingId(settings.clientId);
         });
 
         ipcRenderer.send("getSettings");
@@ -185,6 +189,10 @@ export default function Settings() {
             .finally(() => setCheckingForUpdate(false));
     };
 
+    const copyTrackingId = () => {
+        navigator.clipboard.writeText(trackingId);
+    };
+
     return (<>
         <AppBar position="sticky" sx={{ bgcolor: 'background.paper', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', px: 3 }}>
             <Tabs variant='fullWidth' sx={{ flexGrow: 1 }} value={selectedTab} onChange={(e, newValue) => setSelectedTab(newValue)}>
@@ -199,7 +207,7 @@ export default function Settings() {
                         <SaveOutlinedIcon sx={{ ml: -1.5 }} />
                     }
                     onClick={() => save()}
-                    sx={{ my: 1, ml: 1 }}
+                    sx={{ my: 1, ml: 3 }}
                 />
             </Tooltip>
         </AppBar>
@@ -474,31 +482,40 @@ export default function Settings() {
                 <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Typography variant="h6">Analytics</Typography>
-                        {/* <InfoOutlinedIcon /> */}
+                        <AnalyticsOutlinedIcon />
                     </Box>
-                    <Box display="flex" flexDirection="column" justifyContent="center">
+                    <Box display="flex" flexDirection="column" justifyContent="center" sx={{ mt: 1 }}>
                         <Typography variant="body2" color="gray" sx={{ marginTop: 1 }}>
                             FrameCast periodically collects information about your system such as display resolution, operating system and operating system version in order to improve the application.
                         </Typography>
-                        <Typography variant="body2" color="gray" sx={{ marginTop: 1 }} fontWeight="bold">
-                            FrameCast does not collect any personally identifiable information.
-                        </Typography>
                         <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1 }}>
                             <Typography variant="body2" color="white" >
-                                Share system information with FrameCast.
+                                Share system information with FrameCast
                             </Typography>
                             <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
                                 <Divider variant='middle' orientation='vertical' flexItem />
-                                <Checkbox checked={enableAnalytics} onChange={(_, checked) => setEnableAnalytics(checked)} />
+                                <Switch checked={enableAnalytics} onChange={(_, checked) => setEnableAnalytics(checked)} />
                             </Box>
                         </Box>
+                        <Typography variant="body2" color="gray" sx={{ mt: 1, mb: 1 }} fontWeight="bold">
+                            FrameCast does not collect any personally identifiable information.
+                        </Typography>
+                        <LoadingButton
+                            variant="outlined"
+                            size="medium"
+                            onClick={() => copyTrackingId()}
+                            sx={{ mt: 1 }}
+                            fullWidth
+                        >
+                            Copy Tracking ID
+                        </LoadingButton>
                     </Box>
                 </Paper>
 
                 <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Typography variant="h6">Attribution</Typography>
-                        {/* <InfoOutlinedIcon /> */}
+                        <AttributionIcon />
                     </Box>
                     <Typography variant="body2" color="gray" sx={{ marginTop: 1 }}>
                         @cycjimmy/jsmpeg-player (<Link sx={{ cursor: 'pointer' }} onClick={() => shell.openExternal("https://github.com/cycjimmy/jsmpeg-player")}>View on Github</Link>)
