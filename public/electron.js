@@ -23,7 +23,13 @@ if (process.platform === 'linux') {
 // Create the initial control window once the application is ready.
 app.whenReady().then(async () => {
     // Report monitor count, size, and display scaling factor.
-    if (settings.get().enableAnalytics && !settings.get().systemInformationReported) {
+    // set the analytics expiry to 14 days
+    const NOW = new Date().getTime();
+    const ANALYTICS_EXPIRY = 1000 * 60 * 60 * 24 * 14;
+    if (settings.get().enableAnalytics && (
+        settings.get().systemInformationReportedAt === null ||
+        NOW - settings.get().systemInformationReportedAt > ANALYTICS_EXPIRY
+    )) {
         (async () => {
             const client = new PostHog(
                 'phc_q6GSeEJBJTIIlAlLwRxWxA8OvVNS2sn32mAEWcJZyZD',
@@ -53,7 +59,7 @@ app.whenReady().then(async () => {
 
             settings.set({
                 ...settings.get(),
-                systemInformationReported: true,
+                systemInformationReportedAt: NOW,
             });
 
             await client.shutdownAsync();
