@@ -1,6 +1,6 @@
 title: FrameCast
 description: FrameCast is a powerful tool that can enhance your video conferencing experience by providing flexible screen sharing options that enable effective collaboration.
-remote_theme: pages-themes/slate@v0.2.0
+remote_theme: pages-themes/midnight@v0.2.0
 show_downloads: false
 plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
