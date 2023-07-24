@@ -2,7 +2,7 @@
     <img src="./public/icon.png" width="300" alt="Logo">
 </p>
 
-# FrameCast
+# [FrameCast](https://framecast.app/)
 
 FrameCast is a powerful tool that can enhance your video conferencing experience by providing flexible screen sharing options that enable effective collaboration.
 
