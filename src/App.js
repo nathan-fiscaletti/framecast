@@ -13,13 +13,13 @@ import '@fontsource/roboto/700.css';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import deepOrange from '@mui/material/colors/green';
+import green from '@mui/material/colors/green';
 
 // Create the initial theme for the application.
 const theme = createTheme({
   palette: {
     mode: 'dark',
-    primary: deepOrange,
+    primary: green,
   },
 });
 
