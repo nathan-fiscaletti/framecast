@@ -1,0 +1,61 @@
+name: Package and Deploy
+
+on:
+  release:
+    types: [published]
+
+jobs:
+    build-and-deploy-linux:
+        runs-on: ubuntu-latest
+    
+        steps:
+        - uses: actions/checkout@v2
+        # Set up Node.js
+        - uses: actions/setup-node@v1
+          with:
+            node-version: '18.x'
+        # Install yarn
+        - name: Install Yarn
+          run: npm install -g yarn
+        # Install dependencies
+        - name: Install Dependencies
+          run: yarn install
+        # Build the project
+        - name: Package for Linux
+          run: yarn electron:package:linux
+        # Rename the release artifact
+        - name: Rename Artifact
+          run: mv dist/frame-cast_*.deb dist/frame-cast_${{ github.event.release.tag_name }}_amd64.deb
+        # Upload the release artifact
+        - name: Upload Artifacts
+          uses: softprops/action-gh-release@v2
+          with:
+            files: |
+              dist/frame-cast_${{ github.event.release.tag_name }}_amd64.deb
+    build-and-deploy-windows:
+        runs-on: windows-latest
+    
+        steps:
+        - uses: actions/checkout@v2
+        # Set up Node.js
+        - uses: actions/setup-node@v1
+          with:
+            node-version: '18.x'
+        # Install dependencies
+        - name: Install Dependencies
+          run: npm install
+        # Build the project
+        - name: Package for Windows
+          run: npm run electron:package:win
+        # Rename artifacts
+        - name: Rename Artifact Executable
+          run: mv "dist/FrameCast Setup *.exe" "dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe"
+        - name: Rename Artifact Executable Blockmap
+          run: mv "dist/FrameCast Setup *.exe.blockmap" "dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe.blockmap"
+        # Upload the release artifact
+        - name: Upload Artifacts
+          uses: softprops/action-gh-release@v2
+          with:
+              files: |
+                dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe
+                dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe.blockmap
