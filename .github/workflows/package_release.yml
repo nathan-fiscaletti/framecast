@@ -76,13 +76,13 @@ jobs:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       # Rename the release artifact
       - name: Rename Artifact
-        run: mv dist/FrameCast-*.dmg dist/FrameCast.Setup.darwin_arm64.dmg
+        run: mv dist/FrameCast-*.dmg dist/FrameCast.Setup.darwin_x64.dmg
       - name: Rename Artifact Blockmap
-        run: mv dist/FrameCast-*.dmg.blockmap dist/FrameCast.Setup.darwin_arm64.dmg.blockmap
+        run: mv dist/FrameCast-*.dmg.blockmap dist/FrameCast.Setup.darwin_x64.dmg.blockmap
       # Upload the release artifact
       - name: Upload Artifacts
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/FrameCast.Setup.darwin_arm64.dmg
-            dist/FrameCast.Setup.darwin_arm64.dmg.blockmap
+            dist/FrameCast.Setup.darwin_x64.dmg
+            dist/FrameCast.Setup.darwin_x64.dmg.blockmap
