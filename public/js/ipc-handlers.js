@@ -10,13 +10,17 @@ module.exports = {
 
         ipcMain.on('saveRegion', () => {
             const bounds = windows.getRegionSelectionWindow().getBounds();
-            stream.setStreamScreen(
-                screen.getDisplayNearestPoint(
-                    windows.getRegionSelectionWindow().getBounds()
-                )
-            );
+            
+            const streamScreen = screen.getDisplayNearestPoint(
+                windows.getRegionSelectionWindow().getBounds()
+            )
+            stream.setStreamScreen(streamScreen);
 
-            let streamRegion = { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
+            // Limit capture window to screen size
+            const width = Math.min(bounds.width, streamScreen.workAreaSize.width)
+            const height = Math.min(bounds.height, streamScreen.workAreaSize.width)
+
+            let streamRegion = { x: bounds.x, y: bounds.y, width: width, height: height };
             if (process.platform === "darwin") {
                 streamRegion.x -= stream.getStreamScreen().bounds.x;
                 streamRegion.y -= stream.getStreamScreen().bounds.y;
@@ -38,13 +42,26 @@ module.exports = {
             windows.closeSettingsWindow();
         });
 
-        ipcMain.on("updateSettings", (event, newSettings) => {
-            settings.set(newSettings);
+        ipcMain.on("updateSettings", (event, newSettings) => {        
+            const oldSettings = settings.get()
+            // If default region changed, update current region to match
+            if (oldSettings.defaultScreenCaptureWidth !== newSettings.defaultScreenCaptureWidth || 
+                oldSettings.defaultScreenCaptureHeight !== newSettings.defaultScreenCaptureHeight) {
+                const streamRegion = stream.getStreamRegion()
+                streamRegion.width = newSettings.defaultScreenCaptureWidth
+                streamRegion.height = newSettings.defaultScreenCaptureHeight
+                stream.setStreamRegion(streamRegion)
+            }
 
+            settings.set(newSettings);
             if (stream.isStreaming()) {
                 stream.stopStream();
                 stream.startStream({ app });
             }
+        });
+
+        ipcMain.on('selectRegionOpened', (event, { maxWidth, maxHeight }) => {
+            windows.restrictRegionSelectionWindowSize(maxWidth, maxHeight);
         });
 
         ipcMain.on("selectRegion", (event) => {

@@ -225,6 +225,12 @@ function closeRegionSelectionWindow() {
     }
 }
 
+function restrictRegionSelectionWindowSize(maxWidth, maxHeight) {
+    if (regionSelectionWindow) {
+        regionSelectionWindow.setMaximumSize(maxWidth, maxHeight);
+    }
+}
+
 function closeSettingsWindow() {
     if (settingsWindow) {
         settingsWindow.close();
@@ -240,6 +246,7 @@ module.exports = {
     createRegionSelectionWindow,
     getRegionSelectionWindow,
     closeRegionSelectionWindow,
+    restrictRegionSelectionWindowSize,
 
     createSettingsWindow,
     getSettingsWindow,

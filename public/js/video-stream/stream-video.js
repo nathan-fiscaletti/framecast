@@ -1,4 +1,7 @@
 const { spawn } = require('child_process');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
 const chalk = require('chalk');
 
 const ffmpeg = require('ffmpeg-static').replace(
@@ -40,6 +43,8 @@ module.exports = {
             }
 
             case 'darwin': {
+                const screenIndex = await getCurrentScreenIndex(screenId)
+
                 // Determine the FFmpeg index for the screen on which the recording
                 // will be made. This is necessary because the index is not the same
                 // as the screen ID.
@@ -66,18 +71,13 @@ module.exports = {
                     }
                 });
 
-                let screenIndexes = [];
                 const lines = output.split(/\r?\n/);
-                for (const line of lines) {
-                    if (line.includes("indev")) {
-                        if (line.includes("Capture screen")) {
-                            const idx = parseInt(line.split("[").pop().split("]").shift().trim());
-                            screenIndexes = [...screenIndexes, idx];
-                        }
-                    }
+                const line = lines.find(line => line.includes(`Capture screen ${screenIndex}`))
+                if (!line) {
+                    throw new Error(`Unable to find Capture screen ${screenIndex} in output.`);
                 }
 
-                const ffmpegScreenIndex = screenIndexes[screenId - 1];
+                const ffmpegScreenIndex = parseInt(line.split("[").pop().split("]").shift().trim())
 
                 // To list screens: `./node_modules/ffmpeg-static/ffmpeg -f avfoundation -list_devices true -i "" 2>&1 | grep indev | grep screen`
 
@@ -89,7 +89,7 @@ module.exports = {
                 offsetY = offsetY * scaleFactor;
 
                 args = [
-                    "-probesize", "10M",
+                    "-probesize", "50M",
                     "-f", "avfoundation", "-framerate", `${frameRate}`, "-video_device_index", `${ffmpegScreenIndex}`, "-i", "\":none\"", "-vf", `crop=${width}:${height}:${offsetX}:${offsetY}`, '-capture_cursor', 'true',
                     "-f", "mpegts", "-codec:v", "mpeg1video", "-s", `${width}x${height}`, "-b:v", bitRate, "-bf", "0", `http://localhost:${streamPort}/${streamSecret}`
                 ];
@@ -108,8 +108,20 @@ module.exports = {
     }
 }
 
-// Spawn notepad process and wait for it to close
-
-
-
-
+async function getCurrentScreenIndex(screenId) {
+    const command = `system_profiler SPDisplaysDataType -json`;    
+    try {
+        const { stdout, stderr } = await exec(command);
+        if (stderr) {
+            console.error(`stderr: ${stderr}`);
+            return;
+        }
+        const displayData = JSON.parse(stdout);
+        const displays = displayData.SPDisplaysDataType.flatMap(d => d.spdisplays_ndrvs)
+        const displayIndexLookup = displays.map(d => d._spdisplays_displayID)
+        // eslint-disable-next-line eqeqeq
+        return  displayIndexLookup.findIndex(x => x == screenId)
+    } catch (error) {
+        console.error('Failed to fetch display data:', error);
+    }
+}

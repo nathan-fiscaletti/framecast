@@ -1,25 +1,26 @@
 import React from 'react';
 
-import { styled } from '@mui/material/styles';
-import {
-    AppBar, Checkbox, Box, Button, Divider, TextField,
-    Typography, Tabs, Tab, Tooltip, Snackbar, Alert,
-    AlertTitle, Paper, Collapse, Slider, InputAdornment,
-    Link, Select, MenuItem, FormControl, InputLabel,
-    Slide, Dialog, DialogTitle, DialogContent,
-    DialogActions, DialogContentText, Switch
-} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import {
+    Alert, AlertTitle, AppBar, Box, Button,
+    Checkbox, Collapse, Dialog, DialogActions,
+    DialogContent, DialogContentText, DialogTitle, Divider,
+    FormControl, InputAdornment, InputLabel, Link,
+    MenuItem, Paper, Select, Slide,
+    Slider, Snackbar, Switch, Tab,
+    Tabs, TextField, Tooltip, Typography
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
 import AttributionIcon from '@mui/icons-material/Attribution';
-import SettingsIcon from '@mui/icons-material/Settings';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import GavelOutlinedIcon from '@mui/icons-material/GavelOutlined';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const { ipcRenderer, shell } = window.require('electron');
 
@@ -73,6 +74,8 @@ export default function Settings() {
 
     const [streamPort, setStreamPort] = React.useState(0);
     const [webSocketPort, setWebSocketPort] = React.useState(0);
+    const [defaultScreenCaptureWidth, setDefaultScreenCaptureWidth] = React.useState(0)
+    const [defaultScreenCaptureHeight, setDefaultScreenCaptureHeight] = React.useState(0)
     const [previewVisible, setPreviewVisible] = React.useState(false);
     const [enableAnalytics, setEnableAnalytics] = React.useState(false);
     const [showRegion, setShowRegion] = React.useState(false);
@@ -106,6 +109,8 @@ export default function Settings() {
             setFrameRate(settings.frameRate);
             setBitRate(settings.bitRate);
             setStreamPort(settings.streamPort);
+            setDefaultScreenCaptureWidth(settings.defaultScreenCaptureWidth)
+            setDefaultScreenCaptureHeight(settings.defaultScreenCaptureHeight)
             setWebSocketPort(settings.webSocketPort);
             setPreviewVisible(settings.previewVisible);
             setEnableAnalytics(settings.enableAnalytics);
@@ -163,8 +168,10 @@ export default function Settings() {
                 bitRate,
                 previewVisible,
                 enableAnalytics,
+                defaultScreenCaptureWidth,
+                defaultScreenCaptureHeight
             }
-
+            
             ipcRenderer.send("updateSettings", settings);
             setError(null);
             setSaveFinished(true);
@@ -270,6 +277,11 @@ export default function Settings() {
                     <Typography variant="body2" color="gray" sx={{ marginTop: 1 }}>
                         These settings are used to adjust the invocation of the screen capture process. The default values should work for most users.
                     </Typography>
+                    <Box display="flex" flexDirection="column" justifyContent="center" gap={2} marginTop={2}>
+                        <TextField required size="small" label="Default Screen Capture Width" type="number" variant="outlined" value={defaultScreenCaptureWidth} onChange={e => setDefaultScreenCaptureWidth(parseInt(e.target.value))} InputProps={{ min: 100, max: 4095 }} />
+                        <TextField required size="small" label="Default Screen Capture Height" type="number" variant="outlined" value={defaultScreenCaptureHeight} onChange={e => setDefaultScreenCaptureHeight(parseInt(e.target.value))} InputProps={{ min: 100, max: 4095 }} />
+                    </Box>
+
                     <Box display="flex" flexDirection="column" justifyContent="center" marginTop={2}>
                         <FormControl fullWidth sx={{ mt: 1 }}>
                             <InputLabel id="screen-capture-backend-label">Screen Capture Backend</InputLabel>
