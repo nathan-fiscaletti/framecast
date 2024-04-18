@@ -7,7 +7,7 @@
 FrameCast is a powerful tool that can enhance your video conferencing experience by providing flexible screen sharing options that enable effective collaboration.
 
 [![Download for Windows](https://i.imgur.com/edpkPzv.png)](https://github.com/nathan-fiscaletti/framecast/releases/latest/download/FrameCast.Setup.win32.exe)
-[![Download for Linux](https://i.imgur.com/ob2QUPN.png)](https://github.com/nathan-fiscaletti/framecast/releases/latest/download/frame-cast_linux_amd64.deb)
+[![Download for Linux](https://i.imgur.com/ob2QUPN.png)](https://github.com/nathan-fiscaletti/framecast/releases/latest/download/FrameCast.Setup.linux_amd64.deb)
 [![Download for macOS](https://i.imgur.com/771afwr.png)](https://github.com/nathan-fiscaletti/framecast/releases/latest/download/FrameCast-darwin-arm64.dmg)
 
 ## Video Preview

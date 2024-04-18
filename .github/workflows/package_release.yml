@@ -22,13 +22,13 @@ jobs:
           run: npm run electron:package:linux
         # Rename the release artifact
         - name: Rename Artifact
-          run: mv dist/frame-cast_*.deb dist/frame-cast_${{ github.event.release.tag_name }}_amd64.deb
+          run: mv dist/frame-cast_*.deb FrameCast.Setup.linux_amd64.deb
         # Upload the release artifact
         - name: Upload Artifacts
           uses: softprops/action-gh-release@v2
           with:
             files: |
-              dist/frame-cast_${{ github.event.release.tag_name }}_amd64.deb
+              dist/FrameCast.Setup.linux_amd64.deb
     build-and-deploy-windows:
         runs-on: windows-latest
     
@@ -48,13 +48,13 @@ jobs:
             GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         # Rename artifacts
         - name: Rename Artifact Executable
-          run: mv "dist/FrameCast Setup *.exe" "dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe"
+          run: mv "dist/FrameCast Setup *.exe" "dist/FrameCast.Setup.win32.exe"
         - name: Rename Artifact Executable Blockmap
-          run: mv "dist/FrameCast Setup *.exe.blockmap" "dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe.blockmap"
+          run: mv "dist/FrameCast Setup *.exe.blockmap" "dist/FrameCast.Setup.win32.exe.blockmap"
         # Upload the release artifact
         - name: Upload Artifacts
           uses: softprops/action-gh-release@v2
           with:
               files: |
-                dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe
-                dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe.blockmap
+                dist/FrameCast.Setup.win32.exe
+                dist/FrameCast.Setup.win32.exe.blockmap
