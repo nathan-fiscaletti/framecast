@@ -56,10 +56,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://127.0.0.1:3000 && electronmon .\"",
-    "electron:package:mac": "yarn build && electron-builder -m -c.extraMetadata.main=build/electron.js",
-    "electron:package:win": "yarn build && electron-builder -w -c.extraMetadata.main=build/electron.js",
-    "electron:package:linux": "yarn build && electron-builder -l -c.extraMetadata.main=build/electron.js"
+    "electron:start": "concurrently -k \"cross-env BROWSER=none npm run start\" \"wait-on http://127.0.0.1:3000 && electronmon .\"",
+    "electron:package:mac": "npm run build && electron-builder -m -c.extraMetadata.main=build/electron.js",
+    "electron:package:win": "npm run build && electron-builder -w -c.extraMetadata.main=build/electron.js",
+    "electron:package:linux": "npm run build && electron-builder -l -c.extraMetadata.main=build/electron.js"
   },
   "eslintConfig": {
     "extends": [

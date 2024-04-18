@@ -14,15 +14,12 @@ jobs:
         - uses: actions/setup-node@v1
           with:
             node-version: '18.x'
-        # Install yarn
-        - name: Install Yarn
-          run: npm install -g yarn
         # Install dependencies
         - name: Install Dependencies
-          run: yarn install
+          run: npm install
         # Build the project
         - name: Package for Linux
-          run: yarn electron:package:linux
+          run: npm run electron:package:linux
         # Rename the release artifact
         - name: Rename Artifact
           run: mv dist/frame-cast_*.deb dist/frame-cast_${{ github.event.release.tag_name }}_amd64.deb
@@ -41,20 +38,12 @@ jobs:
         - uses: actions/setup-node@v1
           with:
             node-version: '18.x'
-        # Install yarn
-        - name: Install Yarn
-          run: npm install -g yarn
-        # Disable yarn proxy
-        - name: Disable Yarn Proxy
-          run: npm config rm proxy
-        - name: Disable Yarn HTTPS Proxy
-          run: npm config rm https-proxy
         # Install dependencies
         - name: Install Dependencies
-          run: yarn install
+          run: npm install
         # Build the project
         - name: Package for Windows
-          run: yarn electron:package:win
+          run: npm run electron:package:win
         # Rename artifacts
         - name: Rename Artifact Executable
           run: mv "dist/FrameCast Setup *.exe" "dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe"
