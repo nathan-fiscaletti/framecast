@@ -1,14 +1,15 @@
+const settings = require('./js/settings');
+// Initialize the application settings by loading them from disk.
+settings.initialize();
+
 const { PostHog } = require('posthog-node');
 
 // Module to control the application lifecycle and the native browser window.
 const { app, BrowserWindow, ipcMain, screen, protocol } = require("electron");
 
 const windows = require('./js/windows');
-const settings = require('./js/settings');
 const ipcHandlers = require('./js/ipc-handlers');
 
-// Initialize the application settings by loading them from disk.
-settings.initialize();
 
 // Initialize the IPC handlers used to control the main process from
 // the renderer process.

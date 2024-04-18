@@ -8,6 +8,11 @@ import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 const { ipcRenderer } = window.require('electron');
 
 export default function Selector() {
+    React.useEffect(() => {
+        // Send an IPC message to restrict window size when the Selector is mounted
+        ipcRenderer.send('selectRegionOpened', { maxWidth: 4095, maxHeight: 4095 });
+    }, []);
+
     return (
         <Box 
             sx={{ 

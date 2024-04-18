@@ -38,13 +38,26 @@ module.exports = {
             windows.closeSettingsWindow();
         });
 
-        ipcMain.on("updateSettings", (event, newSettings) => {
-            settings.set(newSettings);
+        ipcMain.on("updateSettings", (event, newSettings) => {        
+            const oldSettings = settings.get()
+            // If default region changed, update current region to match
+            if (oldSettings.defaultScreenCaptureWidth !== newSettings.defaultScreenCaptureWidth || 
+                oldSettings.defaultScreenCaptureHeight !== newSettings.defaultScreenCaptureHeight) {
+                const streamRegion = stream.getStreamRegion()
+                streamRegion.width = newSettings.defaultScreenCaptureWidth
+                streamRegion.height = newSettings.defaultScreenCaptureHeight
+                stream.setStreamRegion(streamRegion)
+            }
 
+            settings.set(newSettings);
             if (stream.isStreaming()) {
                 stream.stopStream();
                 stream.startStream({ app });
             }
+        });
+
+        ipcMain.on('selectRegionOpened', (event, { maxWidth, maxHeight }) => {
+            windows.restrictRegionSelectionWindowSize(maxWidth, maxHeight);
         });
 
         ipcMain.on("selectRegion", (event) => {
