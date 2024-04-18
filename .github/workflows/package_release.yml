@@ -7,7 +7,6 @@ on:
 jobs:
     build-and-deploy-linux:
         runs-on: ubuntu-latest
-    
         steps:
         - uses: actions/checkout@v2
         # Set up Node.js
@@ -29,9 +28,9 @@ jobs:
           with:
             files: |
               dist/FrameCast.Setup.linux_amd64.deb
+
     build-and-deploy-windows:
         runs-on: windows-latest
-    
         steps:
         - uses: actions/checkout@v2
         # Set up Node.js
@@ -58,3 +57,30 @@ jobs:
               files: |
                 dist/FrameCast.Setup.win32.exe
                 dist/FrameCast.Setup.win32.exe.blockmap
+
+    build-and-deploy-mac:
+      runs-on: macos-latest
+      steps:
+      - uses: actions/checkout@v2
+      # Set up Node.js
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '18.x'
+      # Install dependencies
+      - name: Install Dependencies
+        run: npm install
+      # Build the project
+      - name: Package for MacOS
+        run: npm run electron:package:mac
+      # Rename the release artifact
+      - name: Rename Artifact
+        run: mv dist/FrameCast-*.dmg dist/FrameCast.Setup.darwin.dmg
+      - name: Rename Artifact Blockmap
+        run: mv dist/FrameCast-*.dmg.blockmap dist/FrameCast.Setup.darwin.dmg.blockmap
+      # Upload the release artifact
+      - name: Upload Artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/FrameCast.Setup.darwin.dmg
+            dist/FrameCast.Setup.darwin.dmg.blockmap
