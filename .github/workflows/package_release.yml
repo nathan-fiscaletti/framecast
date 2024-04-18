@@ -41,12 +41,15 @@ jobs:
         - uses: actions/setup-node@v1
           with:
             node-version: '18.x'
+        # Install yarn
+        - name: Install Yarn
+          run: npm install -g yarn
         # Install dependencies
         - name: Install Dependencies
-          run: npm install
+          run: yarn install
         # Build the project
         - name: Package for Windows
-          run: npm run electron:package:win
+          run: yarn electron:package:win
         # Rename artifacts
         - name: Rename Artifact Executable
           run: mv "dist/FrameCast Setup *.exe" "dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe"
