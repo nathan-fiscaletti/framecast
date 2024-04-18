@@ -17,6 +17,8 @@ const settings = {
     enableAnalytics: true,
     systemInformationReportedAt: null,
     clientId: uuid(),
+    defaultScreenCaptureWidth: 500,
+    defaultScreenCaptureHeight: 500
 };
 
 function initialize() {

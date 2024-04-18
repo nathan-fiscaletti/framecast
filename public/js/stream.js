@@ -6,7 +6,12 @@ const { startVideoStreamProcess } = require('./video-stream/stream-video');
 const settings = require('./settings');
 
 let streamScreen;
-let streamRegion = { x: 0, y: 0, width: 500, height: 500 };
+let streamRegion = { 
+    x: 0, 
+    y: 0, 
+    width: settings.get().defaultScreenCaptureWidth, 
+    height: settings.get().defaultScreenCaptureHeight 
+};
 let streamProcess;
 let socketRelay;
 
@@ -28,8 +33,8 @@ async function startStream({ app }) {
         streamSecret,
         offsetX: streamRegion.x,
         offsetY: streamRegion.y,
-        width: streamRegion.width,
-        height: streamRegion.height,
+        width: Math.min(streamRegion.width, 4095), // Max resolution ffmpeg can handel
+        height: Math.min(streamRegion.height, 4095), // Max resolution ffmpeg can handel
         screenId: streamScreen.id,
         scaleFactor: streamScreen.scaleFactor
     });
