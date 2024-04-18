@@ -57,7 +57,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:start": "concurrently -k \"cross-env BROWSER=none npm run start\" \"wait-on http://127.0.0.1:3000 && electronmon .\"",
-    "electron:package:mac": "npm run build && electron-builder -m -c.extraMetadata.main=build/electron.js",
+    "electron:package:mac:x64": "npm run build && electron-builder -m --x64 -c.extraMetadata.main=build/electron.js",
+    "electron:package:mac:arm64": "npm run build && electron-builder -m --arm64 -c.extraMetadata.main=build/electron.js",
     "electron:package:win": "npm run build && electron-builder -w -c.extraMetadata.main=build/electron.js",
     "electron:package:linux": "npm run build && electron-builder -l -c.extraMetadata.main=build/electron.js"
   },

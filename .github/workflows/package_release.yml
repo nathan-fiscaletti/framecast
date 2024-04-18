@@ -70,8 +70,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
       # Build the project
-      - name: Package for MacOS
-        run: npm run electron:package:mac
+      - name: Package for MacOS (x64)
+        run: npm run electron:package:mac:x64
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       # Rename the release artifact
@@ -79,6 +79,16 @@ jobs:
         run: mv dist/FrameCast-*.dmg dist/FrameCast.Setup.darwin_x64.dmg
       - name: Rename Artifact Blockmap
         run: mv dist/FrameCast-*.dmg.blockmap dist/FrameCast.Setup.darwin_x64.dmg.blockmap
+      # Build the project
+      - name: Package for MacOS (arm64)
+        run: npm run electron:package:mac:arm64
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      # Rename the release artifact
+      - name: Rename Artifact
+        run: mv dist/FrameCast-*.dmg dist/FrameCast.Setup.darwin_arm64.dmg
+      - name: Rename Artifact Blockmap
+        run: mv dist/FrameCast-*.dmg.blockmap dist/FrameCast.Setup.darwin_arm64.dmg.blockmap
       # Upload the release artifact
       - name: Upload Artifacts
         uses: softprops/action-gh-release@v2
@@ -86,3 +96,5 @@ jobs:
           files: |
             dist/FrameCast.Setup.darwin_x64.dmg
             dist/FrameCast.Setup.darwin_x64.dmg.blockmap
+            dist/FrameCast.Setup.darwin_arm64.dmg
+            dist/FrameCast.Setup.darwin_arm64.dmg.blockmap
