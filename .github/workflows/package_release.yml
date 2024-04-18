@@ -19,7 +19,7 @@ jobs:
           run: npm install -g yarn
         # Install dependencies
         - name: Install Dependencies
-          run: yarn install --network-timeout 1000000
+          run: yarn install
         # Build the project
         - name: Package for Linux
           run: yarn electron:package:linux
@@ -44,9 +44,14 @@ jobs:
         # Install yarn
         - name: Install Yarn
           run: npm install -g yarn
+        # Disable yarn proxy
+        - name: Disable Yarn Proxy
+          run: npm config rm proxy
+        - name: Disable Yarn HTTPS Proxy
+          run: npm config rm https-proxy
         # Install dependencies
         - name: Install Dependencies
-          run: yarn install --network-timeout 1000000
+          run: yarn install
         # Build the project
         - name: Package for Windows
           run: yarn electron:package:win
