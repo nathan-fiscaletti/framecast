@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const chalk = require('chalk')
 
 const { startWebsocketRelay } = require('./video-stream/websocket-relay');
 const { startVideoStreamProcess } = require('./video-stream/stream-video');
@@ -19,6 +20,12 @@ async function startStream({ app }) {
     const windows = require('./windows');
 
     windows.createViewWindow({ app });
+
+    if (process.platform === "darwin" && settings.get().showRegion) {
+        console.log(chalk.red("showing region"))
+        windows.createCaptureBoarderWindow({app});
+    }
+
     const streamSecret = crypto.randomBytes(20).toString('hex')
     socketRelay = await startWebsocketRelay({
         streamSecret,
@@ -59,6 +66,14 @@ function stopStream() {
     if (windows.getViewWindow() && !windows.getViewWindow().isDestroyed()) {
         windows.getViewWindow().setClosable(true);
         windows.closeViewWindow();
+
+        windows.getCaptureBoarderWindow()?.setClosable(true)
+        windows.closeCaptureBoarderWindow();
+    }
+
+    if (windows.getCaptureBoarderWindow() && !windows.getCaptureBoarderWindow().isDestroyed()) {
+        windows.getCaptureBoarderWindow()?.setClosable(true)
+        windows.closeCaptureBoarderWindow();
     }
 }
 

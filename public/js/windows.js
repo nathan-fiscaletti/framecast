@@ -11,6 +11,7 @@ let viewWindow;
 let regionSelectionWindow;
 let settingsWindow;
 let controlWindow;
+let captureBoarderWindow;
 
 const settingsWindowLocation = { x: -1, y: -1 };
 
@@ -40,6 +41,8 @@ function createViewWindow({ app }) {
             contextIsolation: false
         }
     });
+
+    _viewWindow.webContents.openDevTools()
 
     viewWindow = _viewWindow;
 
@@ -214,6 +217,48 @@ function createControlWindow({ app, screen }) {
     // }
 }
 
+function createCaptureBoarderWindow({ app }) {
+    let overlayWindow = new BrowserWindow({
+        x: getStreamRegion().x,
+        y: getStreamRegion().y,
+        width: getStreamRegion().width,
+        height: getStreamRegion().height,
+        frame: false,
+        transparent: true,
+        alwaysOnTop: true,
+        skipTaskbar: true,
+        maximizable: false,
+        closable: false,
+        minimizable: false,
+        resizable: false,
+        webPreferences: {
+            nodeIntegration: true,
+            enableRemoteModule: true,
+            contextIsolation: false
+        }
+    });
+
+    captureBoarderWindow = overlayWindow
+
+    const appURL = app.isPackaged
+    ? `file://${__dirname}/../index.html?content=capture_boarder`
+    : "http://localhost:3000?content=capture_boarder";
+    captureBoarderWindow.loadURL(appURL);
+
+    getControlWindow().focus();
+}
+
+function getCaptureBoarderWindow() {
+    return captureBoarderWindow
+}
+
+function closeCaptureBoarderWindow() {
+    if (captureBoarderWindow) {
+        captureBoarderWindow.close();
+        captureBoarderWindow = null;
+    }
+}
+
 function getControlWindow() {
     return controlWindow;
 }
@@ -251,6 +296,10 @@ module.exports = {
     createSettingsWindow,
     getSettingsWindow,
     closeSettingsWindow,
+
+    createCaptureBoarderWindow,
+    getCaptureBoarderWindow,
+    closeCaptureBoarderWindow,
 
     createControlWindow,
     getControlWindow,
