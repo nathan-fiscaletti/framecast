@@ -23,6 +23,9 @@ jobs:
     # Build the project
     - name: Package for Linux
       run: yarn electron:package:linux
+    # Rename the release artifact
+    - name: Rename Artifact
+      run: mv dist/frame-cast_*.deb dist/frame-cast_${{ github.event.release.tag_name }}_amd64.deb
     # Upload the release artifact
     - name: Upload Artifacts
       uses: softprops/action-gh-release@v2
