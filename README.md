@@ -40,6 +40,20 @@ The application works by using [FFMPEG](https://ffmpeg.org/), an open-source vid
 1. Download the [Latest Version](https://github.com/nathan-fiscaletti/framecast/releases/latest) from the releases page.
 2. Install the application on your computer.
 
+## FAQ
+
+#### Why am I getting a "File is corrupted" error when I run the macOS installer?
+
+  - If you receive a "File is corrupted" error when trying to open the macOS installer, it is likely due to the "Quarantine" attribute being set on the file by macOS. This happens when the file is downloaded from the internet and can prevent you from opening the installer. 
+
+    To fix this issue, you can remove the quarantine attribute from the file using the `xattr` command in the terminal. Open the terminal and run the following command:
+
+    ```bash
+    xattr -c /path/to/FrameCast.Setup.darwin_x64.dmg
+    ```
+
+    This will remove the quarantine attribute from the installer and allow you to open it.
+
 ## Usage
 
 To use FrameCast, follow these steps:
