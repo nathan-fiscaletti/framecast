@@ -1,0 +1,29 @@
+name: Package for Windows
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-deploy-windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    # Set up Node.js
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '18.x'
+    # Install dependencies
+    - name: Install Dependencies
+      run: npm install
+    # Build the project
+    - name: Package for Windows
+      run: npm run electron:package:win
+    # Upload the release artifact
+    - name: Upload Artifacts
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe
+          dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe.blockmap
