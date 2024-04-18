@@ -44,6 +44,8 @@ jobs:
         # Build the project
         - name: Package for Windows
           run: npm run electron:package:win
+          env:
+            GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         # Rename artifacts
         - name: Rename Artifact Executable
           run: mv "dist/FrameCast Setup *.exe" "dist/FrameCast Setup ${{ github.event.release.tag_name }}.exe"
