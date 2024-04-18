@@ -47,16 +47,16 @@ jobs:
             GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         # Rename artifacts
         - name: Rename Artifact Executable
-          run: mv "dist/FrameCast Setup *.exe" "dist/FrameCast.Setup.win32.exe"
+          run: mv "dist/FrameCast Setup *.exe" "dist/FrameCast.Setup.windows_amd64.exe"
         - name: Rename Artifact Executable Blockmap
-          run: mv "dist/FrameCast Setup *.exe.blockmap" "dist/FrameCast.Setup.win32.exe.blockmap"
+          run: mv "dist/FrameCast Setup *.exe.blockmap" "dist/FrameCast.Setup.windows_amd64.exe.blockmap"
         # Upload the release artifact
         - name: Upload Artifacts
           uses: softprops/action-gh-release@v2
           with:
               files: |
-                dist/FrameCast.Setup.win32.exe
-                dist/FrameCast.Setup.win32.exe.blockmap
+                dist/FrameCast.Setup.windows_amd64.exe
+                dist/FrameCast.Setup.windows_amd64.exe.blockmap
 
     build-and-deploy-mac:
       runs-on: macos-latest
@@ -72,15 +72,17 @@ jobs:
       # Build the project
       - name: Package for MacOS
         run: npm run electron:package:mac
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       # Rename the release artifact
       - name: Rename Artifact
-        run: mv dist/FrameCast-*.dmg dist/FrameCast.Setup.darwin.dmg
+        run: mv dist/FrameCast-*.dmg dist/FrameCast.Setup.darwin_arm64.dmg
       - name: Rename Artifact Blockmap
-        run: mv dist/FrameCast-*.dmg.blockmap dist/FrameCast.Setup.darwin.dmg.blockmap
+        run: mv dist/FrameCast-*.dmg.blockmap dist/FrameCast.Setup.darwin_arm64.dmg.blockmap
       # Upload the release artifact
       - name: Upload Artifacts
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/FrameCast.Setup.darwin.dmg
-            dist/FrameCast.Setup.darwin.dmg.blockmap
+            dist/FrameCast.Setup.darwin_arm64.dmg
+            dist/FrameCast.Setup.darwin_arm64.dmg.blockmap
