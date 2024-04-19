@@ -13,11 +13,6 @@ FrameCast is a dynamic screen sharing tool designed to enhance your video confer
 - [Download for macOS (x64)](https://github.com/nathan-fiscaletti/framecast/releases/latest/download/FrameCast.Setup.darwin_x64.dmg)
 - [Download for macOS (arm64)](https://github.com/nathan-fiscaletti/framecast/releases/latest/download/FrameCast.Setup.darwin_arm64.dmg)
 
-## Preview
-
-[Click here for a Video Preview](https://youtu.be/hPjuXTlpybg)
-
-![Preview](https://i.imgur.com/kktGDlw.png)
 
 ## Key Features
 
@@ -28,6 +23,10 @@ FrameCast is a dynamic screen sharing tool designed to enhance your video confer
 - **Simple and Intuitive Interface**: Easy to use and navigate, with straightforward controls for selecting and sharing your screen region.
 
 ## Overview
+
+[Click here for a Video Preview](https://youtu.be/hPjuXTlpybg)
+
+![Preview](https://i.imgur.com/kktGDlw.png)
 
 When it comes to video conferencing, screen sharing is a critical feature that enables remote teams to collaborate effectively. However, the limitations of conventional screen sharing options can hinder this collaboration. For instance, if you're working on multiple windows simultaneously, you may need to switch between them while sharing your screen. In such cases, the inability to share multiple windows at once without sharing your entire desktop can be a significant drawback. Similarly, if you need to add another window to the stream, you have to re-share your screen, which can be disruptive and inconvenient.
 
