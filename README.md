@@ -4,7 +4,7 @@
 
 # [FrameCast](https://framecast.app/)
 
-FrameCast is a powerful tool that can enhance your video conferencing experience by providing flexible screen sharing options that enable effective collaboration.
+FrameCast is a dynamic screen sharing tool designed to enhance your video conferencing experience. It leverages the power of FFMPEG to allow users to select a specific region of any monitor and share just that region. This feature is particularly useful for those who work from home and need to share detailed visual content without losing clarity on standard video conference displays.
 
 ## Downloads
 
@@ -17,28 +17,29 @@ FrameCast is a powerful tool that can enhance your video conferencing experience
 
 [![Preview](https://i.imgur.com/4F3RiCd.png)](https://youtu.be/hPjuXTlpybg)
 
+## Key Features
+
+- **Selective Screen Sharing**: Choose exactly what part of your screen you want to share with participants.
+- **FFMPEG Backend**: Robust and high-performance media handling for smooth streaming quality.
+- **Customizable Stream Settings**: Adjust the bitrate and frame rate to optimize the quality and performance of your video streams.
+- **Support for Ultra-wide Displays**: Perfect for ultra-wide monitor users, ensuring that the shared content fits well on standard displays without distortion or unnecessary scaling.
+- **Simple and Intuitive Interface**: Easy to use and navigate, with straightforward controls for selecting and sharing your screen region.
+
 ## Overview
 
 When it comes to video conferencing, screen sharing is a critical feature that enables remote teams to collaborate effectively. However, the limitations of conventional screen sharing options can hinder this collaboration. For instance, if you're working on multiple windows simultaneously, you may need to switch between them while sharing your screen. In such cases, the inability to share multiple windows at once without sharing your entire desktop can be a significant drawback. Similarly, if you need to add another window to the stream, you have to re-share your screen, which can be disruptive and inconvenient.
 
-**FrameCast provides a way to overcome these limitations by allowing you to share a specific region of your screen instead of the entire screen or a single window.** This can help you avoid distractions and maintain a focused, streamlined presentation. Additionally, it enables you to share multiple windows simultaneously without the need to re-share your screen, enhancing your ability to collaborate with others.
+**FrameCast provides a way to overcome these limitations by allowing you to share a specific region of your screen instead of the entire screen or a single window.**
 
-The application works by using [FFMPEG](https://ffmpeg.org/), an open-source video and audio processing software, to stream a portion of your screen to a separate window that you can then select for sharing in your video conferencing application. The viewer window is fully customizable, allowing you to adjust its size, position, bit-rate and frame-rate to suit your preferences.
+This can help you avoid distractions and maintain a focused, streamlined presentation. Additionally, it enables you to switch between multiple windows while sharing your screen without the need to re-share your screen, enhancing your ability to collaborate with others.
 
-**This is especially useful when you are running on an Ultrawide display.**
+The application works through [FFMPEG](https://ffmpeg.org/), an open-source video and audio processing software, to stream a portion of your screen to a separate window that you can then select for sharing in your video conferencing application. The viewer window is fully customizable, allowing you to adjust its size, position, bit-rate and frame-rate to suit your preferences.
 
-## Features
-
-* Share a specific region of your screen during video conferencing.
-* Share multiple windows simultaneously.
-* Customize the viewer window's size, position, bit-rate, and frame-rate.
-* Simple and intuitive interface.
-* Uses FFMPEG to provide fast and efficient screen streaming.
+**This is especially useful when you are running on an Ultra-wide display.**
 
 ## Installation
 
-1. Download the [Latest Version](https://github.com/nathan-fiscaletti/framecast/releases/latest) from the releases page.
-2. Install the application on your computer.
+Download the [Latest Version](https://github.com/nathan-fiscaletti/framecast/releases/latest) from the releases page.
 
 ## FAQ
 
