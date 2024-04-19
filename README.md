@@ -13,9 +13,11 @@ FrameCast is a dynamic screen sharing tool designed to enhance your video confer
 - [Download for macOS (x64)](https://github.com/nathan-fiscaletti/framecast/releases/latest/download/FrameCast.Setup.darwin_x64.dmg)
 - [Download for macOS (arm64)](https://github.com/nathan-fiscaletti/framecast/releases/latest/download/FrameCast.Setup.darwin_arm64.dmg)
 
-## Video Preview
+## Preview
 
-[![Preview](https://i.imgur.com/4F3RiCd.png)](https://youtu.be/hPjuXTlpybg)
+[Click here for a Video Preview](https://youtu.be/hPjuXTlpybg)
+
+![Preview](https://i.imgur.com/kktGDlw.png)
 
 ## Key Features
 
