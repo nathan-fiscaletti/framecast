@@ -1,7 +1,3 @@
-<p align="center">
-    <img src="./public/icon.png" width="300" alt="Logo">
-</p>
-
 https://github.com/user-attachments/assets/a48472d7-d03e-4da9-a17a-e75bdbf4c8b1
 
 # [FrameCast](https://framecast.app/)
