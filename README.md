@@ -2,6 +2,8 @@
     <img src="./public/icon.png" width="300" alt="Logo">
 </p>
 
+https://github.com/user-attachments/assets/a48472d7-d03e-4da9-a17a-e75bdbf4c8b1
+
 # [FrameCast](https://framecast.app/)
 
 FrameCast is a dynamic screen sharing tool designed to enhance your video conferencing experience. It leverages the power of FFMPEG to allow users to select a specific region of any monitor and share just that region. This feature is particularly useful for those who work from home and need to share detailed visual content without losing clarity on standard video conference displays.
